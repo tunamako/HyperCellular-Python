@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QPainter>
+#include <QPainterPath>
+#include <map>
+#include <vector>
 
 namespace Ui {
 class MainWindow;
@@ -22,8 +25,10 @@ private:
 protected:
     int sideCount;
     int diskDiameter;
+    QPainterPath disk;
     QPainter *painter;
-    QPoint* getPolygonPoints(int padding);
+    QVector<QPoint> getPolygonPoints();
+    QPainterPath *getArcsPath(QVector<QPoint> centerPoints, float radius, float theta);
     void paintEvent(QPaintEvent *e);
 };
 
