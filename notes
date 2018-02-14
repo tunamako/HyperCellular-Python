@@ -1,0 +1,13 @@
+Cells:
+	Bounded by euclidean circles
+
+	Represent by a QRegion
+		- Construct by subtracting/ANDing/XORing regions of boundary circles
+	 
+	 Have cells be a QButton to make clicks constant time complexity
+
+Construction:
+	Start with center polygon
+	Reflect vertices about each of the sides
+	Construct arcs for these new polygons (two points determine a line in hyperbolic space)
+	Repeat in a breadth-first pattern until specified layers have been drawn
