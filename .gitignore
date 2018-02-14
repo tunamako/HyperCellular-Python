@@ -2,5 +2,9 @@
 seniorproject.pro.user
 
 bin
-
 doc
+build
+
+forms/ui_mainwindow.h
+Makefile
+

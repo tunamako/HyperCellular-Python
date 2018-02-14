@@ -25,14 +25,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     src/main.cpp \
-    src/mainwindow.cpp
+    src/mainwindow.cpp \
+    src/poincareview.cpp \
 
 INCLUDEPATH += include
 
 HEADERS += \
-    include/mainwindow.h
+    include/mainwindow.h \
+    include/poincareview.h
 
 FORMS += \
     forms/mainwindow.ui
 
 OBJECTS_DIR += build
+MOC_DIR += build
+UI_DIR += forms
+
+QMAKE_CXXFLAGS += -lgtest -Wunused-parameter
