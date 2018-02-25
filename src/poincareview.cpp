@@ -49,8 +49,7 @@ bool PoincareView::hasBeenDrawn(QPointF *aPoint) {
 	int precision = pow(10,precision);
 	double x = round(precision * aPoint->x())/precision;
 	double y = round(precision * aPoint->y())/precision;
-	std::cout << aPoint->x() << ", " << aPoint->y() << std::endl;
-	std::cout << x << ", " << y << std::endl;
+
 	if(drawnTiles.count(x) == 1) {
 		if(drawnTiles[x].count(y) == 1)
 			return true;
@@ -66,6 +65,9 @@ void PoincareView::drawTile(QVector<QPointF *> *vertices, QPointF *center, int l
 	QVector<QPointF *> *reflectedVertices = new QVector<QPointF *>(sideCount);
 	QPointF *reflectedCenter;
 	ReflectionAxis *axis;
+
+	if(hasBeenDrawn(center))
+		return;
 
 	drawnCount++;
 	painter->drawPoint(*center);
@@ -93,7 +95,7 @@ void PoincareView::drawTile(QVector<QPointF *> *vertices, QPointF *center, int l
 			reflectedVertices->push_back(axis->reflectPoint(j));
 		}
 
-		drawTile(reflectedVertices, reflectedCenter, layers-1);
+		drawTile(reflectedVertices, reflectedCenter, layers - 1);
 	}
 }
 
