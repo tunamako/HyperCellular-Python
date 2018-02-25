@@ -13,7 +13,7 @@ public:
 	virtual ~ReflectionAxis();
 
 	virtual QPointF *reflectPoint(QPointF *aPoint);
-	virtual QVector<QPointF *> *reflectPoints(QVector<QPointF *> *aPoint);
+	QVector<QPointF *> *reflectPoints(QVector<QPointF *> *aPoint);
 	virtual void draw(QPainter *painter);
 };
 
@@ -24,7 +24,6 @@ public:
 	virtual ~LineAxis();
 
 	virtual QPointF *reflectPoint(QPointF *aPoint);
-	virtual QVector<QPointF *> *reflectPoints(QVector<QPointF *> *aPoint);
 	virtual void draw(QPainter *painter);
 
 
@@ -42,7 +41,6 @@ public:
 	virtual ~ArcAxis();
 
 	virtual QPointF *reflectPoint(QPointF *aPoint);
-	virtual QVector<QPointF *> *reflectPoints(QVector<QPointF *> *aPoint);
 	virtual void draw(QPainter *painter);
 
 protected:

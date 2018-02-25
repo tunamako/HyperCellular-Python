@@ -3,8 +3,8 @@
 
 #include <QPoint>
 
-QPointF midpoint(QPointF a, QPointF b);
-double distance(QPointF a, QPointF b);
-bool areCollinear(QPointF *a, QPointF *b, QPointF *c);
+QPointF midpoint(QPointF *A, QPointF *B);
+double distance(QPointF *A, QPointF *B);
+bool areCollinear(QPointF *A, QPointF *B, QPointF *C);
 
 #endif

@@ -22,14 +22,14 @@ PoincareView::PoincareView(QWidget *parent) :
 
 	this->drawnCount = 0;
 	this->drawnTiles = std::map<double, std::unordered_set<double> >();
-	this->sideCount = 5;
-	this->adjacentCount = 4;
-	this->renderLayers = 4;
+	this->sideCount = 7;
+	this->adjacentCount = 3;
+	this->renderLayers = 3;
 }
 PoincareView::~PoincareView(){}
 
 QVector<QPointF *> *PoincareView::getCenterVertices() {
-	QVector<QPointF *> *vertices;
+	QVector<QPointF *> *vertices = new QVector<QPointF *>();
 	int p = sideCount;
 	int q = adjacentCount;
 	//Put this line in its own method
@@ -39,6 +39,7 @@ QVector<QPointF *> *PoincareView::getCenterVertices() {
 	for(int i = 0; i < sideCount; i++) {
 		double x = origin->x() + (dist) * cos(i * alpha);
 		double y = origin->y() + (dist) * sin(i * alpha);
+
 		vertices->push_back(new QPointF(x, y));
 	}
 	return vertices;
@@ -48,7 +49,8 @@ bool PoincareView::hasBeenDrawn(QPointF *aPoint) {
 	int precision = pow(10,precision);
 	double x = round(precision * aPoint->x())/precision;
 	double y = round(precision * aPoint->y())/precision;
-
+	std::cout << aPoint->x() << ", " << aPoint->y() << std::endl;
+	std::cout << x << ", " << y << std::endl;
 	if(drawnTiles.count(x) == 1) {
 		if(drawnTiles[x].count(y) == 1)
 			return true;
@@ -61,32 +63,36 @@ bool PoincareView::hasBeenDrawn(QPointF *aPoint) {
 }
 
 void PoincareView::drawTile(QVector<QPointF *> *vertices, QPointF *center, int layers) {
-	if(layers == 1 || hasBeenDrawn(center))
-		return;
-
-	QVector<QPointF *> *reflectedVertices;
+	QVector<QPointF *> *reflectedVertices = new QVector<QPointF *>(sideCount);
 	QPointF *reflectedCenter;
 	ReflectionAxis *axis;
 
 	drawnCount++;
+	painter->drawPoint(*center);
 
 	//Draw and reflect across each side of this tile
-	for(int i = 0; i < sideCount; i++) {
-		QPointF *A = (*vertices)[i];
-		QPointF *B = (i < sideCount - 1)
-			? (*vertices)[i+1]
-			: (*vertices)[0];
-
+	for(auto it = vertices->begin(); it != vertices->end(); ++it) {
+		QPointF *A = *it;
+		QPointF *B = (it + 1 != vertices->end())
+			? *(it + 1)
+			: *(vertices->begin());
+	
 		if(areCollinear(A, B, origin))
 			axis = new LineAxis(A, B);
 		else
 			axis = new ArcAxis(A, B, origin, diskDiameter);
 
 		axis->draw(painter);
-
-		reflectedVertices = axis->reflectPoints(vertices);
+		if(layers == 1)
+			continue;
 
 		reflectedCenter = axis->reflectPoint(center);
+		reflectedVertices->clear();
+
+		for(auto j : *vertices) {
+			reflectedVertices->push_back(axis->reflectPoint(j));
+		}
+
 		drawTile(reflectedVertices, reflectedCenter, layers-1);
 	}
 }
@@ -100,7 +106,7 @@ void PoincareView::paintEvent(QPaintEvent *e) {
 	origin = new QPointF(size().width()/2, size().height()/2 );
 
 	QVector<QPointF *> *centerVertices = getCenterVertices();
-	painter->setPen(QPen(QColor(122, 0, 127, 255), 1));
+	painter->setPen(QPen(QColor(122, 0, 127, 255), 2));
 	diskRegion = new QRegion(QRect(origin->x() - diskDiameter/2, origin->y() - diskDiameter/2, diskDiameter, diskDiameter), QRegion::Ellipse);
 	diskPath->addRegion(*diskRegion);
 	painter->setClipRegion(*diskRegion);

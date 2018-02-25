@@ -1,4 +1,5 @@
 #include "reflectionaxis.h"
+#include "math_helpers.h"
 
 #include <algorithm>
 #include <iostream>
@@ -10,12 +11,16 @@
 ReflectionAxis::ReflectionAxis() {}
 ReflectionAxis::~ReflectionAxis() {}
 QPointF *ReflectionAxis::reflectPoint(QPointF *aPoint) {}
-QVector<QPointF *> *ReflectionAxis::reflectPoints(QVector<QPointF *> *aPoint) {}
 void ReflectionAxis::draw(QPainter *painter) {}
 
+QVector<QPointF *> *ReflectionAxis::reflectPoints(QVector<QPointF *> *vertices) {
+
+}
+
+
 LineAxis::LineAxis(QPointF *A, QPointF *B) {
-	this->A = A;
-	this->B = B;
+	this->A = new QPointF(A->x(), A->y());
+	this->B = new QPointF(B->x(), B->y());
 }
 LineAxis::~LineAxis() {}
 
@@ -30,43 +35,35 @@ QPointF *LineAxis::reflectPoint(QPointF *aPoint) {
 	return new QPointF(2*d - x, 2*d*m - y + 2*b);
 }
 
-QVector<QPointF *> *LineAxis::reflectPoints(QVector<QPointF *> *vertices) {
-}
-
 void LineAxis::draw(QPainter *painter) {
-	painter->drawLine(*this->A, *this->B);
+	painter->drawLine(*A, *B);
 }
-
-
 
 
 ArcAxis::ArcAxis(QPointF *A, QPointF *B, QPointF *origin, double diskDiameter) {
-	/*
-	this->A = A;
-	this->B = B;
+	this->A = new QPointF(A->x(), A->y());
+	this->B = new QPointF(B->x(), B->y());
+	QPointF *tempA = new QPointF(A->x(), A->y());
+	QPointF *tempB = new QPointF(B->x(), B->y());
 
 	this->center = origin;
 	this->radius = diskDiameter/2;
-	QPointF c = *this->reflectPoint(&a);
+	QPointF *C = this->reflectPoint(A);
 
-	a.setX(a.x()-c.x());
-	a.setY(a.y()-c.y());
-	b.setX(b.x()-c.x());
-	b.setY(b.y()-c.y());
+	tempA->setX(tempA->x() - C->x());
+	tempA->setY(tempA->y() - C->y());
+	tempB->setX(tempB->x() - C->x());
+	tempB->setY(tempB->y() - C->y());
 
-	double Z1 = a.x() * a.x() + a.y() * a.y();
-	double Z2 = b.x() * b.x() + b.y() * b.y();
-	double D = 2 * (a.x() * b.y() - b.x() * a.y());
+	double Z1 = tempA->x() * tempA->x() + tempA->y() * tempA->y();
+	double Z2 = tempB->x() * tempB->x() + tempB->y() * tempB->y();
+	double D = 2 * (tempA->x() * tempB->y() - tempB->x() * tempA->y());
 
-	double centerX = (Z1 * b.y() - Z2 * a.y()) / D + c.x();
-	double centerY = (a.x() * Z2 - b.x() * Z1) / D + c.y();
+	this->center = new QPointF();
+	this->center->setX((Z1 * tempB->y() - Z2 * tempA->y()) / D + C->x());
+	this->center->setY((tempA->x() * Z2 - tempB->x() * Z1) / D + C->y());
 
-	circle_t circ;
-	circ.center = new QPointF(centerX, centerY);
-	circ.radius = distance(*circ.center, c);
-
-	return circ;
-	*/
+	this->radius = distance(this->center, C);
 }
 ArcAxis::~ArcAxis() {}
 
@@ -82,9 +79,6 @@ QPointF *ArcAxis::reflectPoint(QPointF *aPoint) {
 	return new QPointF(invX, invY);
 }
 
-QVector<QPointF *> *ArcAxis::reflectPoints(QVector<QPointF *> *vertices) {
-}
-
 void ArcAxis::draw(QPainter *painter) {
 	//rectangle inscribed by aCircle
 	QRectF rect(center->x() - radius, center->y() - radius, radius * 2, radius * 2);
@@ -96,4 +90,6 @@ void ArcAxis::draw(QPainter *painter) {
 		sweepAngle -= 360;
 
 	painter->drawArc(rect, 16 * lineA.angle(), 16 * sweepAngle);
+	painter->drawPoint(*A);
+	painter->drawPoint(*B);
 }
