@@ -1,11 +1,15 @@
 #ifndef POINCAREVIEW_H
 #define POINCAREVIEW_H
+
 #include <QWidget>
 #include <QPainter>
 #include <QOpenGLWidget>
+#include <QPainterPath>
 
-#include <tuple>
-#include <set>
+
+#include <string>
+#include <map>
+#include <unordered_set>
 
 namespace Ui {
 class PoincareView;
@@ -13,10 +17,13 @@ class PoincareView;
 
 struct circle_t {
     QPointF *center;
-    float radius;
+    double radius;
 };
 
-typedef std::tuple<float, float> two_tuple;
+struct line_t {
+	double y_intercept;
+	double slope;
+};
 
 class PoincareView : public QOpenGLWidget {
 
@@ -28,16 +35,21 @@ protected:
     int sideCount;
     int adjacentCount;
     int diskDiameter;
-    std::set<two_tuple> drawnTiles;
+    int drawnCount;
+    int renderLayers;
+    std::map<double, std::unordered_set<double> > drawnTiles;
 
     QPainter *painter;
     QPointF *origin;
+    QRegion *diskRegion;
+    QPainterPath *diskPath;
 
-    QVector<QPointF> getCenterVertices();
-    QPointF *reflectPointAbout(QPointF *aPoint, circle_t aCircle);
-    circle_t getCircleFromPoints(QPointF a, QPointF b);
+    QVector<QPointF *> *getCenterVertices();
+    QPointF *reflectAboutArc(QPointF *aPoint, circle_t aCircle);
+    QPointF *reflectAboutLine(QPointF *aPoint, line_t aLine);
+    bool hasBeenDrawn(QPointF *aPoint);
     void drawArc(QPointF A, QPointF B, circle_t circle);
-    void drawTile(QVector<QPointF> vertices, int layers);    
+    void drawTile(QVector<QPointF *> *vertices, QPointF *center, int layers);    
     void paintEvent(QPaintEvent *e);
 };
 

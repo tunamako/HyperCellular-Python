@@ -26,13 +26,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     src/main.cpp \
     src/mainwindow.cpp \
+    src/math_helpers.cpp \
+    src/reflectionaxis.cpp \
     src/poincareview.cpp \
 
 INCLUDEPATH += include
 
 HEADERS += \
     include/mainwindow.h \
-    include/poincareview.h
+    include/math_helpers.h \
+    include/reflectionaxis.h \
+    include/poincareview.h \
 
 FORMS += \
     forms/mainwindow.ui
@@ -41,4 +45,4 @@ OBJECTS_DIR += build
 MOC_DIR += build
 UI_DIR += forms
 
-QMAKE_CXXFLAGS += -lgtest -Wunused-parameter
+QMAKE_CXXFLAGS += -lgtest -Wunused-parameter -g
