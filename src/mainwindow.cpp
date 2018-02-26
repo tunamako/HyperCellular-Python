@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QBrush>
 #include <QRegion>
+#include <QDesktopWidget>
 
 #include <iostream>
 #include <math.h>

@@ -32,19 +32,20 @@ public:
     virtual ~PoincareView();
 
 protected:
-    int sideCount;
-    int adjacentCount;
+    unsigned int sideCount;
+    unsigned int adjacentCount;
     int diskDiameter;
-    int drawnCount;
-    int renderLayers;
-    std::map<double, std::unordered_set<double> > drawnTiles;
+    unsigned int drawnCount;
+    unsigned int renderLayers;
+    std::map<float, std::unordered_set<float> > drawnTiles;
 
     QPainter *painter;
     QPointF *origin;
     QRegion *diskRegion;
     QPainterPath *diskPath;
+    QVector<QPointF *> *centerVertices;
 
-    QVector<QPointF *> *getCenterVertices();
+    void genCenterVertices();
     QPointF *reflectAboutArc(QPointF *aPoint, circle_t aCircle);
     QPointF *reflectAboutLine(QPointF *aPoint, line_t aLine);
     bool hasBeenDrawn(QPointF *aPoint);

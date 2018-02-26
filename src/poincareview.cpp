@@ -20,16 +20,18 @@
 PoincareView::PoincareView(QWidget *parent) :
 	QOpenGLWidget(parent) {
 
+	this->centerVertices = new QVector<QPointF *>();
+	this->origin = new QPointF();
+
 	this->drawnCount = 0;
-	this->drawnTiles = std::map<double, std::unordered_set<double> >();
+	this->drawnTiles = std::map<float, std::unordered_set<float> >();
 	this->sideCount = 7;
 	this->adjacentCount = 3;
-	this->renderLayers = 3;
+	this->renderLayers = 4;
 }
 PoincareView::~PoincareView(){}
 
-QVector<QPointF *> *PoincareView::getCenterVertices() {
-	QVector<QPointF *> *vertices = new QVector<QPointF *>();
+void PoincareView::genCenterVertices() {
 	int p = sideCount;
 	int q = adjacentCount;
 	//Put this line in its own method
@@ -40,21 +42,20 @@ QVector<QPointF *> *PoincareView::getCenterVertices() {
 		double x = origin->x() + (dist) * cos(i * alpha);
 		double y = origin->y() + (dist) * sin(i * alpha);
 
-		vertices->push_back(new QPointF(x, y));
+		centerVertices->push_back(new QPointF(x, y));
 	}
-	return vertices;
 }
 
 bool PoincareView::hasBeenDrawn(QPointF *aPoint) {
-	int precision = pow(10,precision);
-	double x = round(precision * aPoint->x())/precision;
-	double y = round(precision * aPoint->y())/precision;
+	int precision = pow(10,3);
+	float x = round(precision * aPoint->x())/precision;
+	float y = round(precision * aPoint->y())/precision;
 
 	if(drawnTiles.count(x) == 1) {
 		if(drawnTiles[x].count(y) == 1)
 			return true;
 	} else {
-		drawnTiles[x] = std::unordered_set<double>();
+		drawnTiles[x] = std::unordered_set<float>();
 	}
 
 	drawnTiles[x].insert(y);
@@ -100,22 +101,24 @@ void PoincareView::drawTile(QVector<QPointF *> *vertices, QPointF *center, int l
 }
 
 void PoincareView::paintEvent(QPaintEvent *e) {
-	diskDiameter = std::min(size().width(), size().height()) - 10;
-	painter = new QPainter(this);
+	this->diskDiameter = (int)std::min(size().width(), size().height()) - 10;
+	this->painter = new QPainter(this);
 	painter->setRenderHint(QPainter::HighQualityAntialiasing);
-	diskPath = new QPainterPath();
+	this->diskPath = new QPainterPath();
 
-	origin = new QPointF(size().width()/2, size().height()/2 );
+	this->origin->setX(round(size().width()/2));
+	this->origin->setY(round(size().height()/2));
 
-	QVector<QPointF *> *centerVertices = getCenterVertices();
+	genCenterVertices();
 	painter->setPen(QPen(QColor(122, 0, 127, 255), 2));
-	diskRegion = new QRegion(QRect(origin->x() - diskDiameter/2, origin->y() - diskDiameter/2, diskDiameter, diskDiameter), QRegion::Ellipse);
+	this->diskRegion = new QRegion(QRect(origin->x() - diskDiameter/2, origin->y() - diskDiameter/2, diskDiameter, diskDiameter), QRegion::Ellipse);
 	diskPath->addRegion(*diskRegion);
 	painter->setClipRegion(*diskRegion);
 
-	drawTile(centerVertices, origin, renderLayers);
+	drawTile(this->centerVertices, this->origin, this->renderLayers);
 
 	painter->setClipping(false);
+
 	int diskCenterX = -diskDiameter/2 + origin->x();
 	int diskCenterY = -diskDiameter/2 + origin->y();
 	painter->setPen(QPen(QColor(5, 0, 127, 255), 3));
@@ -123,6 +126,9 @@ void PoincareView::paintEvent(QPaintEvent *e) {
 
 	painter->end();
 	std::cout << drawnCount << std::endl;
-	drawnCount = 0;
-	drawnTiles.clear();
+
+	delete this->diskPath;
+	this->drawnCount = 0;
+	this->drawnTiles.clear();
+	this->centerVertices->clear();
 }

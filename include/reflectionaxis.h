@@ -37,7 +37,7 @@ protected:
 class ArcAxis : public ReflectionAxis {
 
 public:
-	ArcAxis(QPointF *A, QPointF *B, QPointF *origin, double diskDiameter);
+	ArcAxis(QPointF *A, QPointF *B, QPointF *origin, int diskDiameter);
 	virtual ~ArcAxis();
 
 	virtual QPointF *reflectPoint(QPointF *aPoint);
