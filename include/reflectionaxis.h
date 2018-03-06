@@ -30,8 +30,8 @@ public:
 protected:
 	QPointF *A;
 	QPointF *B;
-	double y_intercept;
-	double slope;
+	float y_intercept;
+	float slope;
 };
 
 class ArcAxis : public ReflectionAxis {
@@ -47,7 +47,7 @@ protected:
 	QPointF *A;
 	QPointF *B;
 	QPointF *center;
-	double radius;
+	float radius;
 };
 
 #endif

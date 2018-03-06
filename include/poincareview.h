@@ -15,16 +15,6 @@ namespace Ui {
 class PoincareView;
 }
 
-struct circle_t {
-    QPointF *center;
-    double radius;
-};
-
-struct line_t {
-	double y_intercept;
-	double slope;
-};
-
 class PoincareView : public QOpenGLWidget {
 
 public:
@@ -32,11 +22,11 @@ public:
     virtual ~PoincareView();
 
 protected:
-    unsigned int sideCount;
-    unsigned int adjacentCount;
+    u_int sideCount;
+    u_int adjacentCount;
+    u_int drawnCount;
+    u_int renderLayers;
     int diskDiameter;
-    unsigned int drawnCount;
-    unsigned int renderLayers;
     std::map<float, std::unordered_set<float> > drawnTiles;
 
     QPainter *painter;
@@ -46,10 +36,7 @@ protected:
     QVector<QPointF *> *centerVertices;
 
     void genCenterVertices();
-    QPointF *reflectAboutArc(QPointF *aPoint, circle_t aCircle);
-    QPointF *reflectAboutLine(QPointF *aPoint, line_t aLine);
     bool hasBeenDrawn(QPointF *aPoint);
-    void drawArc(QPointF A, QPointF B, circle_t circle);
     void drawTile(QVector<QPointF *> *vertices, QPointF *center, int layers);    
     void paintEvent(QPaintEvent *e);
 };

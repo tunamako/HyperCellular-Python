@@ -13,14 +13,13 @@ ReflectionAxis::~ReflectionAxis() {}
 QPointF *ReflectionAxis::reflectPoint(QPointF *aPoint) {}
 void ReflectionAxis::draw(QPainter *painter) {}
 
-QVector<QPointF *> *ReflectionAxis::reflectPoints(QVector<QPointF *> *vertices) {
-
-}
-
 
 LineAxis::LineAxis(QPointF *A, QPointF *B) {
 	this->A = new QPointF(A->x(), A->y());
 	this->B = new QPointF(B->x(), B->y());
+
+	this->slope = (B->y() - A->y())/(B->x() - A->x());
+	this->y_intercept = A->y() - (this->slope * A->x());
 }
 LineAxis::~LineAxis() {}
 

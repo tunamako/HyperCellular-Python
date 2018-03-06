@@ -27,7 +27,7 @@ PoincareView::PoincareView(QWidget *parent) :
 	this->drawnTiles = std::map<float, std::unordered_set<float> >();
 	this->sideCount = 7;
 	this->adjacentCount = 3;
-	this->renderLayers = 4;
+	this->renderLayers = 6;
 }
 PoincareView::~PoincareView(){}
 
@@ -35,12 +35,12 @@ void PoincareView::genCenterVertices() {
 	int p = sideCount;
 	int q = adjacentCount;
 	//Put this line in its own method
-	double dist = (diskDiameter/2) * sqrt(cos(M_PI/p + M_PI/q)*cos(M_PI/q) / (sin(2*M_PI/q) * sin(M_PI/p) + cos(M_PI/p + M_PI/q)* cos(M_PI/q)));
-	double alpha = 2 * M_PI / sideCount;
+	float dist = (diskDiameter/2) * sqrt(cos(M_PI/p + M_PI/q)*cos(M_PI/q) / (sin(2*M_PI/q) * sin(M_PI/p) + cos(M_PI/p + M_PI/q)* cos(M_PI/q)));
+	float alpha = 2 * M_PI / sideCount;
 
-	for(int i = 0; i < sideCount; i++) {
-		double x = origin->x() + (dist) * cos(i * alpha);
-		double y = origin->y() + (dist) * sin(i * alpha);
+	for(u_int i = 0; i < sideCount; i++) {
+		float x = origin->x() + (dist) * cos(i * alpha);
+		float y = origin->y() + (dist) * sin(i * alpha);
 
 		centerVertices->push_back(new QPointF(x, y));
 	}
@@ -101,6 +101,7 @@ void PoincareView::drawTile(QVector<QPointF *> *vertices, QPointF *center, int l
 }
 
 void PoincareView::paintEvent(QPaintEvent *e) {
+	if(e){}
 	this->diskDiameter = (int)std::min(size().width(), size().height()) - 10;
 	this->painter = new QPainter(this);
 	painter->setRenderHint(QPainter::HighQualityAntialiasing);
@@ -109,12 +110,12 @@ void PoincareView::paintEvent(QPaintEvent *e) {
 	this->origin->setX(round(size().width()/2));
 	this->origin->setY(round(size().height()/2));
 
-	genCenterVertices();
 	painter->setPen(QPen(QColor(122, 0, 127, 255), 2));
 	this->diskRegion = new QRegion(QRect(origin->x() - diskDiameter/2, origin->y() - diskDiameter/2, diskDiameter, diskDiameter), QRegion::Ellipse);
 	diskPath->addRegion(*diskRegion);
 	painter->setClipRegion(*diskRegion);
 
+	genCenterVertices();
 	drawTile(this->centerVertices, this->origin, this->renderLayers);
 
 	painter->setClipping(false);

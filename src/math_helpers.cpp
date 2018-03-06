@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <iostream>
 
-double distance(QPointF *A, QPointF *B){
+float distance(QPointF *A, QPointF *B){
 	return sqrt(pow((B->x() - A->x()), 2) + pow((B->y() - A->y()), 2));
 }
 

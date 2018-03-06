@@ -45,4 +45,4 @@ OBJECTS_DIR += build
 MOC_DIR += build
 UI_DIR += forms
 
-QMAKE_CXXFLAGS += -lgtest -Wunused-parameter -g
+QMAKE_CXXFLAGS += -lgtest -Wunused-parameter -g 
