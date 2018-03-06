@@ -11,7 +11,11 @@ def midpoint(A, B):
 	return QPointF((A.x() + B.x())/2, (A.y() + B.y())/2)
 
 def areCollinear(A, B, C):
-	AB = QLineF(A, B)
-	BC = QLineF(B, C)
-	AC = QLineF(A, C)
-	return math.ceil(AB.angleTo(BC)) == math.ceil(AB.angleTo(AC))
+	if B.x() - A.x() == 0:
+		B, C = C, B
+	elif C.x() - B.x() == 0:
+		A, B = B, A
+	mAB = (B.y() - A.y())/(B.x() - A.x())
+	mBC = (C.y() - B.y())/(C.x() - B.x())
+
+	return abs(mBC - mAB)<= 0.00001

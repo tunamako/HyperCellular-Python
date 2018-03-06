@@ -15,9 +15,9 @@ class PoincareView(QOpenGLWidget):
 
 		self.drawnCount = 0
 		self.drawnTiles = {}
-		self.sideCount = 5
-		self.adjacentCount = 4
-		self.renderLayers = 3
+		self.sideCount = 7
+		self.adjacentCount = 3
+		self.renderLayers = 5
 
 	def genCenterVertices(self):
 		p = self.sideCount
@@ -49,9 +49,12 @@ class PoincareView(QOpenGLWidget):
 				B = vertices[0]
 
 			if areCollinear(A, B, self.origin):
-				axis = LineAxis(A, B)
+				self.painter.drawLine(A, B)
+				continue
 			else:
 				axis = ArcAxis(A, B, self.origin, self.diskDiameter)
+				if axis.collinear:
+					axis = LineAxis(A, B)
 
 		
 			axis.draw(self.painter)
@@ -60,9 +63,6 @@ class PoincareView(QOpenGLWidget):
 
 			reflectedCenter = axis.reflectPoint(center)
 			reflectedVertices = [axis.reflectPoint(j) for j in vertices]
-
-			if reflectedCenter.x() < 0 or reflectedCenter.x() < 0:
-				print("wah")
 
 			self.drawTile(reflectedVertices, reflectedCenter, layers - 1) == 0
 		

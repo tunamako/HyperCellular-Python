@@ -47,8 +47,6 @@ class LineAxis(ReflectionAxis):
 			intersectY = -1/m*intersectX + y + x/m
 			invX = x + 2*(intersectX - x)
 			invY = y + 2*(intersectY - y)
-
-
 		return QPointF(invX, invY)
 
 	def draw(self, painter):
@@ -76,13 +74,14 @@ class ArcAxis(ReflectionAxis):
 		mA = (B.y() - A.y())/(B.x() - A.x())
 		#Get slope between B and C
 		mB = (C.y() - B.y())/(C.x() - B.x())
-
+		
 		#Use the intersection of the perpendicular bisectors of AB and BC as the center of the circle
 		centerX = (mA*mB*(A.y()-C.y()) + mB*(A.x()+B.x()) - mA*(B.x() + C.x())) / (2*(mB - mA))
 		centerY = (-1/mA)*(centerX - (A.x() + B.x())/2) + (A.y() + B.y())/2
 
 		self.center = QPointF(centerX, centerY)
 		self.radius = distance(self.center, A)
+		self.collinear = False
 
 	def reflectPoint(self, aPoint):
 		x = aPoint.x()
