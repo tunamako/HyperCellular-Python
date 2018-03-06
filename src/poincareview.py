@@ -5,6 +5,7 @@ from PyQt5.QtCore import *
 from tile import Tile
 
 import math
+import random
 from collections import defaultdict
 from pprint import *
 
@@ -50,6 +51,7 @@ class PoincareView(QOpenGLWidget):
 		while queue:
 			curTile = queue.pop()
 			curTile.draw(self.painter)
+			self.tiles.append(curTile)
 
 			if curTile.layer == 1:
 				continue
@@ -89,9 +91,18 @@ class PoincareView(QOpenGLWidget):
 		self.painter.setPen(QPen(QColor(5, 0, 127, 255), 3))
 		self.painter.drawEllipse(QRect(diskCenterX, diskCenterY, self.diskDiameter, self.diskDiameter))
 
+
+		for tile in self.tiles:
+			path = QPainterPath()
+			path.addRegion(tile.region)
+			self.painter.fillPath(path, QBrush(QColor(random.random() * 255, random.random() * 255, random.random() * 255, 255)))
+			self.painter.fillPath(path, QBrush(QColor(random.random() * 255, random.random() * 255, random.random() * 255, 255)))
+
+
+
 		self.painter.end()
 		del self.painter
 		self.centerVertices = []
-
 		self.drawnCount = 0
 		self.drawnTiles.clear()
+		self.tiles.clear()
