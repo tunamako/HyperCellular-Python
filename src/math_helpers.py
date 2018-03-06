@@ -18,4 +18,4 @@ def areCollinear(A, B, C):
 	mAB = (B.y() - A.y())/(B.x() - A.x())
 	mBC = (C.y() - B.y())/(C.x() - B.x())
 
-	return abs(mBC - mAB)<= 0.00001
+	return abs(mBC - mAB)<= 0.000001

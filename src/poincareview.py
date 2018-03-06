@@ -6,6 +6,8 @@ from reflectionaxis import ArcAxis, LineAxis
 from math_helpers import areCollinear
 
 import math
+from collections import defaultdict
+from pprint import *
 
 class PoincareView(QOpenGLWidget):
 	def __init__(self):
@@ -14,10 +16,10 @@ class PoincareView(QOpenGLWidget):
 		self.origin = QPointF()
 
 		self.drawnCount = 0
-		self.drawnTiles = {}
-		self.sideCount = 7
-		self.adjacentCount = 3
-		self.renderLayers = 5
+		self.drawnTiles = defaultdict(set)
+		self.sideCount = 5
+		self.adjacentCount = 4
+		self.renderLayers = 3
 
 	def genCenterVertices(self):
 		p = self.sideCount
@@ -32,14 +34,22 @@ class PoincareView(QOpenGLWidget):
 			self.centerVertices.append(QPointF(x, y))
 		
 	def hasBeenDrawn(self, aPoint):
-		pass
+		precision = 1000
+		x = round(precision * aPoint.x())/precision
+		y = round(precision * aPoint.y())/precision
+
+		if x in self.drawnTiles and y in self.drawnTiles[x]:
+			return True
+
+		self.drawnTiles[x].add(y)
+		return False
 
 	def drawTile(self, vertices, center, layers) :
 		reflectedVertices = []
 		reflectedCenter = QPointF()
-	
+
 		self.drawnCount += 1
-		#self.painter.drawPoint(center)
+		self.painter.drawPoint(center)
 
 		for i, v in enumerate(vertices):
 			A = v
@@ -62,12 +72,12 @@ class PoincareView(QOpenGLWidget):
 			if layers is 1: continue
 
 			reflectedCenter = axis.reflectPoint(center)
+			if self.hasBeenDrawn(reflectedCenter):
+				continue
 			reflectedVertices = [axis.reflectPoint(j) for j in vertices]
 
 			self.drawTile(reflectedVertices, reflectedCenter, layers - 1) == 0
 		
-
-
 	def paintEvent(self, QPaintEvent):
 		self.diskDiameter = min(self.size().width(), self.size().height()) - 10
 		self.painter = QPainter(self)
@@ -95,5 +105,6 @@ class PoincareView(QOpenGLWidget):
 		self.painter.end()
 		del self.painter
 		self.centerVertices = []
+		print(self.drawnCount)
 		self.drawnCount = 0
-		self.drawnTiles = {}
+		self.drawnTiles = defaultdict(set)
