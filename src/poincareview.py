@@ -2,8 +2,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-from reflectionaxis import ArcAxis, LineAxis
-from math_helpers import areCollinear
+from tile import Tile
 
 import math
 from collections import defaultdict
@@ -17,9 +16,10 @@ class PoincareView(QOpenGLWidget):
 
 		self.drawnCount = 0
 		self.drawnTiles = defaultdict(set)
+		self.tiles = []
 		self.sideCount = 5
 		self.adjacentCount = 4
-		self.renderLayers = 3
+		self.renderLayers = 5
 
 	def genCenterVertices(self):
 		p = self.sideCount
@@ -44,39 +44,26 @@ class PoincareView(QOpenGLWidget):
 		self.drawnTiles[x].add(y)
 		return False
 
-	def drawTile(self, vertices, center, layers) :
-		reflectedVertices = []
-		reflectedCenter = QPointF()
+	def drawTiling(self, vertices, center, layers):
+		queue = [Tile(vertices, center, layers, self.origin, self.diskDiameter)]
 
-		self.drawnCount += 1
-		self.painter.drawPoint(center)
+		while queue:
+			curTile = queue.pop()
+			curTile.draw(self.painter)
 
-		for i, v in enumerate(vertices):
-			A = v
-			if i+1 is not len(vertices):
-				B = vertices[i+1]
-			else:
-				B = vertices[0]
-
-			if areCollinear(A, B, self.origin):
-				self.painter.drawLine(A, B)
+			if curTile.layer == 1:
 				continue
-			else:
-				axis = ArcAxis(A, B, self.origin, self.diskDiameter)
-				if axis.collinear:
-					axis = LineAxis(A, B)
 
-		
-			axis.draw(self.painter)
+			for edge in curTile.edges:
+				reflectedCenter = edge.reflectPoint(curTile.center)
+				if self.hasBeenDrawn(reflectedCenter):
+					continue
 
-			if layers is 1: continue
+				reflectedVertices = edge.reflectPoints(curTile.vertices)
 
-			reflectedCenter = axis.reflectPoint(center)
-			if self.hasBeenDrawn(reflectedCenter):
-				continue
-			reflectedVertices = [axis.reflectPoint(j) for j in vertices]
-
-			self.drawTile(reflectedVertices, reflectedCenter, layers - 1) == 0
+				neighbor = Tile(reflectedVertices, reflectedCenter, curTile.layer-1, self.origin, self.diskDiameter)
+				curTile.neighbors.append(neighbor)
+				queue.insert(0, neighbor)
 		
 	def paintEvent(self, QPaintEvent):
 		self.diskDiameter = min(self.size().width(), self.size().height()) - 10
@@ -93,7 +80,7 @@ class PoincareView(QOpenGLWidget):
 
 		self.genCenterVertices()
 		self.painter.drawPoint(self.origin)
-		self.drawTile(self.centerVertices, self.origin, self.renderLayers)
+		self.drawTiling(self.centerVertices, self.origin, self.renderLayers)
 
 		self.painter.setClipping(False)
 
@@ -105,6 +92,6 @@ class PoincareView(QOpenGLWidget):
 		self.painter.end()
 		del self.painter
 		self.centerVertices = []
-		print(self.drawnCount)
+
 		self.drawnCount = 0
-		self.drawnTiles = defaultdict(set)
+		self.drawnTiles.clear()

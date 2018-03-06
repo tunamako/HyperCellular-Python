@@ -10,8 +10,11 @@ class ReflectionAxis:
 		pass		
 	def reflectPoint(self, aPoint):
 		pass
+	def reflectPoints(self, points):
+		return [self.reflectPoint(p) for p in points]
 	def draw(self, painter):
 		pass
+
  
 class LineAxis(ReflectionAxis):
 	def __init__(self, A, B):
@@ -48,7 +51,7 @@ class LineAxis(ReflectionAxis):
 			invX = x + 2*(intersectX - x)
 			invY = y + 2*(intersectY - y)
 		return QPointF(invX, invY)
-
+		
 	def draw(self, painter):
 		painter.drawLine(self.A, self.B)
 
