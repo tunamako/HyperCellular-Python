@@ -5,7 +5,7 @@ from PyQt5.QtCore import *
 from math_helpers import distance
 import math
 
-class ReflectionAxis:
+class Edge:
 	def __init__(self):
 		pass		
 	def reflectPoint(self, aPoint):
@@ -16,7 +16,7 @@ class ReflectionAxis:
 		pass
 
  
-class LineAxis(ReflectionAxis):
+class LineEdge(Edge):
 	def __init__(self, A, B):
 		super().__init__()
 		self.A = QPointF(A.x(), A.y())
@@ -55,7 +55,7 @@ class LineAxis(ReflectionAxis):
 	def draw(self, painter):
 		painter.drawLine(self.A, self.B)
 
-class ArcAxis(ReflectionAxis):
+class ArcEdge(Edge):
 	def __init__(self, A, B, origin, diskDiameter):
 		super().__init__()
 		self.A = QPointF(A.x(), A.y())

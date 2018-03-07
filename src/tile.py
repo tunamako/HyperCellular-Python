@@ -3,7 +3,9 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 from math_helpers import areCollinear
-from reflectionaxis import ArcAxis, LineAxis
+from edge import ArcEdge, LineEdge
+import random
+
 
 class Tile:
 	def __init__(self, vertices, center, layer, origin, diskDiameter):
@@ -17,10 +19,9 @@ class Tile:
 
 		for A, B in zip(vertices[-1:] + vertices[:-1], vertices):
 			if areCollinear(A, B, origin):
-				self.edges.append(LineAxis(A, B))
+				self.edges.append(LineEdge(A, B))
 			else:
-				self.edges.append(ArcAxis(A, B, origin, diskDiameter))
-
+				self.edges.append(ArcEdge(A, B, origin, diskDiameter))
 
 		edgeRegions = []
 		for edge in self.edges:
@@ -28,7 +29,7 @@ class Tile:
 			edgeRegions.append(QRegion(rect, QRegion.Ellipse))
 
 		self.region = QRegion(QRect(origin.x() - diskDiameter/2, origin.y() - diskDiameter/2, diskDiameter, diskDiameter), QRegion.Ellipse)
-		
+
 		for region in edgeRegions:
 			if region.contains(QPoint(center.x(), center.y())):
 				self.region = self.region.intersected(region)
@@ -37,6 +38,18 @@ class Tile:
 
 
 	def draw(self, painter):
+		#Fill tile
+		colors = [
+			QColor(255, 140, 0, 255), 	#orange
+			QColor(65,105,225, 255),	#blue
+			#QColor(0, 0, 0, 255),		#black
+		]
+		path = QPainterPath()
+		path.addRegion(self.region)
+		painter.fillPath(path, QBrush(QColor(random.choice(colors))))
+
+		#Draw Border
+		painter.setPen(QPen(QColor(0,0,0,255), 2))
 		painter.drawPoint(self.center)
 		for edge in self.edges:
 			edge.draw(painter)
