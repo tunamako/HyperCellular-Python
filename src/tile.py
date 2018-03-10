@@ -16,13 +16,13 @@ class Tile:
 		self.neighbors = []
 		self.center = center
 		self.layer = layer
-
+		
 		for A, B in zip(vertices[-1:] + vertices[:-1], vertices):
 			if areCollinear(A, B, origin):
 				self.edges.append(LineEdge(A, B))
 			else:
 				self.edges.append(ArcEdge(A, B, origin, diskDiameter))
-
+		"""
 		edgeRegions = []
 		for edge in self.edges:
 			rect = QRect(edge.center.x() - edge.radius, edge.center.y() - edge.radius, edge.radius * 2, edge.radius * 2)
@@ -35,9 +35,10 @@ class Tile:
 				self.region = self.region.intersected(region)
 			else:
 				self.region = self.region.subtracted(region)
-
+		"""
 
 	def draw(self, painter):
+		"""
 		#Fill tile
 		colors = [
 			QColor(255, 140, 0, 255), 	#orange
@@ -47,9 +48,9 @@ class Tile:
 		path = QPainterPath()
 		path.addRegion(self.region)
 		painter.fillPath(path, QBrush(QColor(random.choice(colors))))
-
+		"""
 		#Draw Border
-		painter.setPen(QPen(QColor(0,0,0,255), 2))
-		painter.drawPoint(self.center)
+		painter.setPen(QPen(QColor(0,0,255,255), 2))
+		#painter.drawPoint(self.center)
 		for edge in self.edges:
 			edge.draw(painter)

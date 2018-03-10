@@ -15,10 +15,11 @@ class PoincareViewModel(QOpenGLWidget):
 		self.origin = QPointF()
 
 		self.drawnTiles = defaultdict(set)
+
 		self.tiles = []
 		self.sideCount = 5
 		self.adjacentCount = 4
-		self.renderLayers = 3
+		self.renderDepth = 5
 
 	def getCenterVertices(self):
 		p = self.sideCount
@@ -46,10 +47,11 @@ class PoincareViewModel(QOpenGLWidget):
 		return False
 
 	# Breadth-first construction of tiles by reflection about each side, with the 
-	# initial tile centered on the origin. The disk origin and diskDiameterare 
-	# passed in since they are needed to calculate the arcs that make up the sides of a tile.
+	# initial tile centered on the origin. The disk origin and diskDiameter are 
+	# passed to each tile since they are needed to calculate the arcs that 
+	# make up the sides of a tile.
 	def drawTiling(self):
-		queue = [Tile(self.getCenterVertices(), self.origin, self.renderLayers, self.origin, self.diskDiameter)]
+		queue = [Tile(self.getCenterVertices(), self.origin, self.renderDepth, self.origin, self.diskDiameter)]
 
 		while queue:
 			curTile = queue.pop()
@@ -80,6 +82,7 @@ class PoincareViewModel(QOpenGLWidget):
 		self.origin.setY(self.size().height()/2)
 
 		self.painter = QPainter(self)
+		self.painter.eraseRect(0, 0, self.size().width(), self.size().height())
 		self.painter.setPen(QPen(QColor(122, 0, 127, 255), 2))
 
 		radius = self.diskDiameter/2
@@ -107,11 +110,25 @@ class PoincareViewModel(QOpenGLWidget):
 	def setStateColor(self, aState, aColor):
 		pass
 
-	def setSideCount(self, sideCount):
-		#Verify that given dimension is valid
-		self.sideCount = sideCount
-		self.update()
+	def areValidDims(self, p, q):
+		 return (p-2)*(q-2) > 4
 
-	def setAdjacentCount(self, adjacentCount):
-		#Verify that given dimension is valid
-		self.adjacentCount = adjacentCount
+	def setSideCount(self, count):
+		if self.areValidDims(count, self.adjacentCount):
+			self.sideCount = count
+			self.update()
+			return 0
+
+		return -1
+
+	def setAdjCount(self, count):
+		if self.areValidDims(count, self.sideCount):
+			self.adjacentCount = count
+			self.update()
+			return 0
+			
+		return -1
+
+	def setRenderDepth(self, depth):
+		self.renderDepth = depth
+		self.update()

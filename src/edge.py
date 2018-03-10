@@ -80,7 +80,10 @@ class ArcEdge(Edge):
 		
 		#Use the intersection of the perpendicular bisectors of AB and BC as the center of the circle
 		centerX = (mA*mB*(A.y()-C.y()) + mB*(A.x()+B.x()) - mA*(B.x() + C.x())) / (2*(mB - mA))
-		centerY = (-1/mA)*(centerX - (A.x() + B.x())/2) + (A.y() + B.y())/2
+		try:
+			centerY = (-1/mA)*(centerX - (A.x() + B.x())/2) + (A.y() + B.y())/2
+		except:
+			centerY = (-1/mB)*(centerX - (B.x() + C.x())/2) + (B.y() + C.y())/2
 
 		self.center = QPointF(centerX, centerY)
 		self.radius = distance(self.center, A)
