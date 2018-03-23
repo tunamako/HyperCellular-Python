@@ -2,10 +2,17 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
+import random
+
 class CellularController(QWidget):
 	def __init__(self, parent):
 		super().__init__(parent)
 		self.model = self.parent().model
+
+		self.states = [
+			QColor(255, 255, 255, 255),
+			QColor(0, 0, 0, 255),
+		]
 
 		self.initSideCountInput()
 		self.initAdjCountInput()
@@ -14,7 +21,17 @@ class CellularController(QWidget):
 		self.vbox = QVBoxLayout()
 		self.vbox.addLayout(self.sideCountLayout)
 		self.vbox.addLayout(self.adjCountLayout)
-		self.vbox.addLayout(self.depthLayout)
+		self.vbox.addLayout(self.depthLayout) 
+
+		randButton = QPushButton()
+		nextButton = QPushButton()
+		randButton.clicked.connect(self.randomize)
+		nextButton.clicked.connect(self.next)
+		randButton.setText("Randomize")
+
+		self.vbox.addWidget(randButton)
+		self.vbox.addWidget(nextButton)
+		self.vbox.addStretch(1)
 		self.setLayout(self.vbox)
 
 	def initSideCountInput(self):
@@ -59,3 +76,12 @@ class CellularController(QWidget):
 
 	def setRenderDepth(self, depth):
 		self.model.setRenderDepth(depth)
+
+	def randomize(self):
+		for tile in self.model.tiles:
+			tile.nextColor = random.choice(self.states)
+			self.model.toBeUpdated.append(tile)
+		self.model.update()
+
+	def next(self):
+		pass

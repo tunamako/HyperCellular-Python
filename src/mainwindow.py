@@ -10,22 +10,21 @@ import sys
 class MainWindow(QMainWindow):
 	def __init__(self):
 		super().__init__()
-		self.model = PoincareViewModel()
+		self.model = PoincareViewModel(self)
 		self.controller = CellularController(self)
-
 
 		self.hbox = QHBoxLayout()
 		self.hbox.addWidget(self.controller)
 		self.hbox.addWidget(self.model)	
 		self.hbox.setContentsMargins(0, 0, 0, 0)
 		self.hbox.setStretch(0, 1)
-		self.hbox.setStretch(1, 3)
+		self.hbox.setStretch(1, 4)
 
 		widget = QWidget()
 		widget.setLayout(self.hbox)
 
 		self.setCentralWidget(widget)
-		self.setWindowTitle('QT Testing')
+		self.setWindowTitle('HyperCellular')
 		self.setBaseSize(500, 500)    
 		self.show()
 

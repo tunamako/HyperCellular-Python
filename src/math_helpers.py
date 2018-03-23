@@ -10,12 +10,13 @@ def distance(A, B):
 def midpoint(A, B):
 	return QPointF((A.x() + B.x())/2, (A.y() + B.y())/2)
 
-def areCollinear(A, B, C):
-	if B.x() - A.x() == 0:
-		B, C = C, B
-	elif C.x() - B.x() == 0:
-		A, B = B, A
-	mAB = (B.y() - A.y())/(B.x() - A.x())
-	mBC = (C.y() - B.y())/(C.x() - B.x())
+def slope(A, B):
+	return ((B.y() - A.y())/(B.x() - A.x()))
 
-	return abs(mBC - mAB)<= 0.000001
+def areCollinear(A, B, C):
+	try:
+		diff = abs(slope(B,C) - slope(A,B))
+	except:
+		diff = 1
+
+	return diff <= 0.00000001

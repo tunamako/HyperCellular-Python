@@ -2,7 +2,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-from math_helpers import distance
+from math_helpers import distance, slope
 import math
 
 class Edge:
@@ -10,11 +10,10 @@ class Edge:
 		pass		
 	def reflectPoint(self, aPoint):
 		pass
-	def reflectPoints(self, points):
-		return [self.reflectPoint(p) for p in points]
+	def reflectTile(self, aTile):
+		return [self.reflectPoint(p) for p in aTile.vertices]
 	def draw(self, painter):
 		pass
-
  
 class LineEdge(Edge):
 	def __init__(self, A, B):
@@ -23,7 +22,7 @@ class LineEdge(Edge):
 		self.B = QPointF(B.x(), B.y())
 
 		try:
-			self.slope = ((B.y() - A.y())/(B.x() - A.x()))
+			self.slope = slope(A, B)
 		except ZeroDivisionError as e:
 			self.slope = None
 			self.y_intercept = None
@@ -55,6 +54,9 @@ class LineEdge(Edge):
 	def draw(self, painter):
 		painter.drawLine(self.A, self.B)
 
+	def getRegion(self, polygonCenter, origin, diskDiameter):
+		pass
+
 class ArcEdge(Edge):
 	def __init__(self, A, B, origin, diskDiameter):
 		super().__init__()
@@ -73,11 +75,12 @@ class ArcEdge(Edge):
 		elif C.x() - B.x() == 0:
 			A, B = B, A
 
-		#Get slope between A and B
-		mA = (B.y() - A.y())/(B.x() - A.x())
-		#Get slope between B and C
-		mB = (C.y() - B.y())/(C.x() - B.x())
-		
+		try:
+			mA = slope(A, B)
+			mB = slope(B, C)
+		except:
+			return
+			
 		#Use the intersection of the perpendicular bisectors of AB and BC as the center of the circle
 		centerX = (mA*mB*(A.y()-C.y()) + mB*(A.x()+B.x()) - mA*(B.x() + C.x())) / (2*(mB - mA))
 		try:
@@ -109,3 +112,7 @@ class ArcEdge(Edge):
 			sweepAngle -= 360
 		
 		painter.drawArc(rect, 16 * lineA.angle(), 16 * sweepAngle)
+
+	def getRegion(self):
+		rect = QRect(self.center.x() - self.radius, self.center.y() - self.radius, self.radius * 2, self.radius * 2)
+		return QRegion(rect, QRegion.Ellipse)
