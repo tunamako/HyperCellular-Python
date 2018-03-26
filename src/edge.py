@@ -1,6 +1,5 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QRegion
+from PyQt5.QtCore import QRect, QRectF, QPointF, QLineF
 
 from math_helpers import distance, slope
 import math

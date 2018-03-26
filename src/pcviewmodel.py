@@ -1,6 +1,6 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QColor, QRegion, QPainter, QBrush, QPen
+from PyQt5.QtCore import QRect, QPointF
+from PyQt5.QtWidgets import QWidget
 
 from tile import Tile
 
@@ -136,21 +136,21 @@ class PoincareViewModel(QWidget):
 		self.origin.setX(self.size().width()/2)
 		self.origin.setY(self.size().height()/2)
 
-		self.painter.setPen(QPen(QColor(122, 0, 127, 255), 4))
+		self.painter.setPen(QPen(QColor(122, 0, 127, 255), 3))
 		radius = self.diskDiameter/2
 		x = self.origin.x()
 		y = self.origin.y()
 		diskRect = QRect(x - radius, y - radius, self.diskDiameter, self.diskDiameter)
 		self.painter.setClipRegion(QRegion(diskRect, QRegion.Ellipse))
-		"""
+		
 		if self.toBeUpdated:
 			self.updateTiles()
 		else:
 			self.painter.eraseRect(0, 0, self.size().width(), self.size().height())
 			self.drawTiling()
-		"""
+		
 
-		self.drawTestRect()
+		#self.drawTestRect()
 		self.painter.setClipping(False)
 		self.painter.setPen(QPen(QColor(5, 0, 127, 255), 3))
 		self.painter.drawEllipse(diskRect)

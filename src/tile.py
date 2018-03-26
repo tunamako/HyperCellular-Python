@@ -1,6 +1,5 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QColor, QRegion, QPainterPath, QBrush
+from PyQt5.QtCore import QRect, QPoint
 
 from math_helpers import areCollinear
 from edge import ArcEdge, LineEdge
@@ -29,10 +28,12 @@ class Tile:
 				region = edge.getRegion()
 
 			self.edges.append(edge)
+			
 			if region.contains(QPoint(center.x(), center.y())):
 				self.region = self.region.intersected(region)
 			else:
 				self.region = self.region.subtracted(region)
+			
 		
 	def draw(self, painter):
 		path = QPainterPath()

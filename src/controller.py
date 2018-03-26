@@ -1,6 +1,5 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QWidget, QPushButton, QSpinBox, QHBoxLayout, QVBoxLayout, QLabel
 
 import random
 
