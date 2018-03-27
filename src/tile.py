@@ -34,7 +34,6 @@ class Tile:
 			else:
 				self.region = self.region.subtracted(region)
 			
-		
 	def draw(self, painter):
 		path = QPainterPath()
 		path.addRegion(self.region)
@@ -42,3 +41,9 @@ class Tile:
 
 		for edge in self.edges:
 			edge.draw(painter)
+
+	def update(self, painter):
+		if self.nextColor:
+			self.color = self.nextColor
+			self.nextColor = None
+		self.draw(painter)

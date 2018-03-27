@@ -1,17 +1,15 @@
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QWidget, QPushButton, QSpinBox, QHBoxLayout, QVBoxLayout, QLabel
 
+from automaton import Automaton
 import random
 
 class CellularController(QWidget):
 	def __init__(self, parent):
 		super().__init__(parent)
 		self.model = self.parent().model
+		self.automaton = Automaton()
 
-		self.states = [
-			QColor(255, 255, 255, 255),
-			QColor(0, 0, 0, 255),
-		]
 
 		self.initSideCountInput()
 		self.initAdjCountInput()
@@ -23,10 +21,11 @@ class CellularController(QWidget):
 		self.vbox.addLayout(self.depthLayout) 
 
 		randButton = QPushButton()
-		nextButton = QPushButton()
 		randButton.clicked.connect(self.randomize)
-		nextButton.clicked.connect(self.next)
 		randButton.setText("Randomize")
+		nextButton = QPushButton()
+		nextButton.clicked.connect(self.nextGeneration)
+		nextButton.setText("Next Gen")
 
 		self.vbox.addWidget(randButton)
 		self.vbox.addWidget(nextButton)
@@ -65,11 +64,15 @@ class CellularController(QWidget):
 
 	def setSideCount(self, count):
 		current = self.model.sideCount
+
+		#If the input is invalid, set the spinbox value to what it was previously
 		if self.model.setSideCount(count) == -1:
 			self.sideCountInput.setValue(current)
 
 	def setAdjCount(self, count):
 		current = self.model.adjacentCount
+
+		#If the input is invalid, set the spinbox value to what it was previously
 		if self.model.setAdjCount(count) == -1:
 			self.adjCountInput.setValue(current)
 
@@ -77,10 +80,9 @@ class CellularController(QWidget):
 		self.model.setRenderDepth(depth)
 
 	def randomize(self):
-		for tile in self.model.tiles:
-			tile.nextColor = random.choice(self.states)
-			self.model.toBeUpdated.append(tile)
-		self.model.update()
+		self.automaton.randomize(self.model.tiles)
+		self.model.updateTiles()
 
-	def next(self):
-		pass
+	def nextGeneration(self):
+		self.automaton.nextGeneration(self.model.tiles)
+		self.model.updateTiles()

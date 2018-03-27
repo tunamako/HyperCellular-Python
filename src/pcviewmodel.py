@@ -1,5 +1,5 @@
-from PyQt5.QtGui import QColor, QRegion, QPainter, QBrush, QPen
-from PyQt5.QtCore import QRect, QPointF
+from PyQt5.QtGui import QColor, QRegion, QPainter, QBrush, QPen, QTransform, QPainterPath
+from PyQt5.QtCore import QRect, QPointF, QPoint, QLineF, QRectF
 from PyQt5.QtWidgets import QWidget
 
 from tile import Tile
@@ -18,7 +18,7 @@ class PoincareViewModel(QWidget):
 
 		self.drawnTiles = defaultdict(set)
 		self.tiles = []
-		self.toBeUpdated = []
+		self.tilesToUpdate = False
 		self.sideCount = 5
 		self.adjacentCount = 4
 		self.renderDepth = 5
@@ -83,13 +83,6 @@ class PoincareViewModel(QWidget):
 				curTile.neighbors.append(neighbor)
 				queue.insert(0, neighbor)
 
-	def updateTiles(self):
-		for tile in self.toBeUpdated:
-			tile.color = tile.nextColor
-			tile.nextColor = None
-			tile.draw(self.painter)
-		self.toBeUpdated.clear()
-
 	def getExtendedX(self, d, m):
 		return math.sqrt((d*d) / (1 + 1 * m*m))
 
@@ -99,7 +92,10 @@ class PoincareViewModel(QWidget):
 		polyCenter = QPoint(self.origin.x()*(.7), self.origin.y()*(.6))
 
 		initLine = QLineF(A, B)
-		azimuth = QLineF(A, QPointF(A.x(), B.y())).angleTo(QLineF(A,B))
+		theta = QLineF(A, QPointF(A.x(), B.y())).angleTo(QLineF(A,B))
+		if(theta > 180):
+			theta -= 360
+
 		mAB = slope(A, B)
 		b = A.y() - mAB * A.x()
 
@@ -123,10 +119,37 @@ class PoincareViewModel(QWidget):
 		rectCenterx = segMid.x() + delta
 		rectCenterTwo = QPointF(rectCenterx, (-1/mAB) * rectCenterx + (2*segMid.x() - b))
 
-		if distance(polyCenter, rectCenterOne) < distance(polyCenter, rectCenterTwo):
+		baseRect = QRect(-1 * self.diskDiameter/4, 
+							-1 * self.diskDiameter/4,
+							self.diskDiameter/2,
+							self.diskDiameter/2)
+		self.painter.drawRect(baseRect)
+		transform = QTransform()
+
+		transform.translate(rectCenterOne.x(), rectCenterOne.y())
+		transform.rotate(theta)
+		rectOne = QRegion(baseRect) * transform
+
+		transform.reset()
+		transform.translate(rectCenterTwo.x(), rectCenterTwo.y())
+		transform.rotate(theta)
+		rectTwo = QRegion(baseRect) * transform
+
+
+		path = QPainterPath()
+
+		if rectOne.contains(polyCenter):
 			self.painter.drawPoint(rectCenterOne)
+			path.addRegion(rectOne)
 		else:
 			self.painter.drawPoint(rectCenterTwo)
+			path.addRegion(rectTwo)
+
+		self.painter.fillPath(path, QBrush(QColor(0, 0, 0, 100)))
+
+	def updateTiles(self):
+		self.tilesToUpdate = True
+		self.update()
 
 	def paintEvent(self, anEvent):
 		self.painter = QPainter(self)
@@ -143,31 +166,28 @@ class PoincareViewModel(QWidget):
 		diskRect = QRect(x - radius, y - radius, self.diskDiameter, self.diskDiameter)
 		self.painter.setClipRegion(QRegion(diskRect, QRegion.Ellipse))
 		
-		if self.toBeUpdated:
-			self.updateTiles()
+		if self.tilesToUpdate:
+			for tile in self.tiles:
+				tile.update(self.painter)
+			self.tilesToUpdate = False
 		else:
-			self.painter.eraseRect(0, 0, self.size().width(), self.size().height())
+			#self.painter.eraseRect(0, 0, self.size().width(), self.size().height())
 			self.drawTiling()
 		
+		self.painter.setClipping(False)
 
 		#self.drawTestRect()
-		self.painter.setClipping(False)
 		self.painter.setPen(QPen(QColor(5, 0, 127, 255), 3))
 		self.painter.drawEllipse(diskRect)
 		self.painter.drawPoint(self.origin)
 		
 		self.painter.end()
 
-	def setStateList(self, aStateList):
-		pass
-	def setStateColor(self, aState, aColor):
-		pass
-
-	def areValidDims(self, p, q):
+	def areHyperbolicDims(self, p, q):
 		 return (p-2)*(q-2) > 4
 
 	def setSideCount(self, count):
-		if self.areValidDims(count, self.adjacentCount):
+		if self.areHyperbolicDims(count, self.adjacentCount):
 			self.sideCount = count
 			self.update()
 			return 0
@@ -175,7 +195,7 @@ class PoincareViewModel(QWidget):
 		return -1
 
 	def setAdjCount(self, count):
-		if self.areValidDims(self.sideCount, count):
+		if self.areHyperbolicDims(self.sideCount, count):
 			self.adjacentCount = count
 			self.update()
 			return 0
