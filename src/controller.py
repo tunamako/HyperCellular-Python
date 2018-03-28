@@ -1,16 +1,16 @@
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QWidget, QPushButton, QSpinBox, QHBoxLayout, QVBoxLayout, QLabel
+from PyQt5.QtCore import QPoint
 
-from automaton import Automaton
+from automaton import Life, WireWorld
 import random
 
 class CellularController(QWidget):
 	def __init__(self, parent):
 		super().__init__(parent)
 		self.model = self.parent().model
-		self.automaton = Automaton()
-
-
+		self.automaton = WireWorld()
+		
 		self.initSideCountInput()
 		self.initAdjCountInput()
 		self.initDepthInput()
@@ -84,5 +84,18 @@ class CellularController(QWidget):
 		self.model.updateTiles()
 
 	def nextGeneration(self):
-		self.automaton.nextGeneration(self.model.tiles)
+		self.automaton.nextGeneration(self.model)
 		self.model.updateTiles()
+
+	def clicked(self, e):
+		location = QPoint(e.x(), e.y())
+		for tile in self.model.tiles:
+			if tile.region.contains(location):
+				self.automaton.clicked(tile)
+				self.model.updateTiles()
+				break
+
+	def resetColors(self):
+		self.automaton.fill(self.model.tiles)
+		self.model.updateTiles()
+

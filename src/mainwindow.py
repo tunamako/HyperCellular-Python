@@ -25,7 +25,6 @@ class MainWindow(QMainWindow):
 		self.setWindowTitle('HyperCellular')
 		self.setBaseSize(500, 500)    
 		self.show()
-
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
 	ex = MainWindow()

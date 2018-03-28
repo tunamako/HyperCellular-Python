@@ -62,7 +62,9 @@ class PoincareViewModel(QWidget):
 		self.tiles.clear()
 		self.centerVertices.clear()
 
-		queue = [Tile(self.getCenterVertices(), self.origin, self.renderDepth, self.origin, self.diskDiameter)]
+		centerTile = Tile(self.getCenterVertices(), self.origin, self.renderDepth, self.origin, self.diskDiameter)
+		#TODO: generate region for center tile
+		queue = [centerTile]
 
 		while queue:
 			curTile = queue.pop()
@@ -81,6 +83,7 @@ class PoincareViewModel(QWidget):
 
 				neighbor = Tile(reflectedVertices, reflectedCenter, curTile.layer-1, self.origin, self.diskDiameter)
 				curTile.neighbors.append(neighbor)
+				neighbor.neighbors.append(curTile)
 				queue.insert(0, neighbor)
 
 	def getExtendedX(self, d, m):
@@ -164,7 +167,8 @@ class PoincareViewModel(QWidget):
 		x = self.origin.x()
 		y = self.origin.y()
 		diskRect = QRect(x - radius, y - radius, self.diskDiameter, self.diskDiameter)
-		self.painter.setClipRegion(QRegion(diskRect, QRegion.Ellipse))
+		self.diskRegion = QRegion(diskRect, QRegion.Ellipse)
+		self.painter.setClipRegion(self.diskRegion)
 		
 		if self.tilesToUpdate:
 			for tile in self.tiles:
@@ -205,3 +209,7 @@ class PoincareViewModel(QWidget):
 	def setRenderDepth(self, depth):
 		self.renderDepth = depth
 		self.update()
+
+	def mousePressEvent(self, e):
+		if self.diskRegion.contains(QPoint(e.x(), e.y())):
+			self.parent.controller.clicked(e)
