@@ -97,70 +97,6 @@ class PoincareViewModel(QWidget):
 					neighbor.neighbors.append(curTile)
 			#print(len(curTile.neighbors))
 
-	def getExtendedX(self, d, m):
-		return math.sqrt((d*d) / (1 + 1 * m*m))
-
-	def drawTestRect(self):
-		A = QPointF(self.origin.x()*(.8), self.origin.y()*(.8))
-		B = QPointF(self.origin.x()*(.7), self.origin.y()*(.7))
-		polyCenter = QPoint(self.origin.x()*(.7), self.origin.y()*(.6))
-
-		initLine = QLineF(A, B)
-		theta = QLineF(A, QPointF(A.x(), B.y())).angleTo(QLineF(A,B))
-		if(theta > 180):
-			theta -= 360
-
-		mAB = slope(A, B)
-		b = A.y() - mAB * A.x()
-
-		segMidx = self.getExtendedX(self.diskDiameter/4, mAB)
-		if B.x() < self.origin.x():
-			segMidx *= -1
-		segMidx += self.origin.x()
-
-		segMidy = mAB * segMidx + b
-
-		segMid = QPointF(segMidx, segMidy)
-		self.painter.drawPoint(segMid)
-		self.painter.drawPoint(A)
-		self.painter.drawPoint(B)
-		self.painter.drawPoint(polyCenter)
-
-		delta = self.getExtendedX(self.diskDiameter/4, -1/mAB)
-
-		rectCenterx = segMid.x() - delta
-		rectCenterOne = QPointF(rectCenterx, (-1/mAB) * rectCenterx + (2*segMid.x() - b))
-		rectCenterx = segMid.x() + delta
-		rectCenterTwo = QPointF(rectCenterx, (-1/mAB) * rectCenterx + (2*segMid.x() - b))
-
-		baseRect = QRect(-1 * self.diskDiameter/4, 
-							-1 * self.diskDiameter/4,
-							self.diskDiameter/2,
-							self.diskDiameter/2)
-		self.painter.drawRect(baseRect)
-		transform = QTransform()
-
-		transform.translate(rectCenterOne.x(), rectCenterOne.y())
-		transform.rotate(theta)
-		rectOne = QRegion(baseRect) * transform
-
-		transform.reset()
-		transform.translate(rectCenterTwo.x(), rectCenterTwo.y())
-		transform.rotate(theta)
-		rectTwo = QRegion(baseRect) * transform
-
-
-		path = QPainterPath()
-
-		if rectOne.contains(polyCenter):
-			self.painter.drawPoint(rectCenterOne)
-			path.addRegion(rectOne)
-		else:
-			self.painter.drawPoint(rectCenterTwo)
-			path.addRegion(rectTwo)
-
-		self.painter.fillPath(path, QBrush(QColor(0, 0, 0, 100)))
-
 	def updateTiles(self):
 		self.tilesToUpdate = True
 		self.update()
@@ -186,12 +122,10 @@ class PoincareViewModel(QWidget):
 				tile.update(self.painter)
 			self.tilesToUpdate = False
 		else:
-			#self.painter.eraseRect(0, 0, self.size().width(), self.size().height())
 			self.drawTiling()
 		
 		self.painter.setClipping(False)
 
-		#self.drawTestRect()
 		self.painter.setPen(QPen(QColor(5, 0, 127, 255), 3))
 		self.painter.drawEllipse(diskRect)
 		self.painter.drawPoint(self.origin)
