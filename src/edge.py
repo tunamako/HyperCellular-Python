@@ -112,6 +112,6 @@ class ArcEdge(Edge):
 		
 		painter.drawArc(rect, 16 * lineA.angle(), 16 * sweepAngle)
 
-	def getRegion(self):
+	def getRegion(self, polygonCenter, origin, diskDiameter):
 		rect = QRect(self.center.x() - self.radius, self.center.y() - self.radius, self.radius * 2, self.radius * 2)
 		return QRegion(rect, QRegion.Ellipse)

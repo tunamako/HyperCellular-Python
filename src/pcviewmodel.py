@@ -16,12 +16,13 @@ class PoincareViewModel(QWidget):
 		self.centerVertices = []
 		self.origin = QPointF()
 
-		self.drawnTiles = defaultdict(set)
+		self.drawnTiles = defaultdict(defaultdict)
 		self.tiles = []
 		self.tilesToUpdate = False
 		self.sideCount = 5
 		self.adjacentCount = 4
 		self.renderDepth = 5
+		self.fillMode = False
 
 
 	#Formula to calculate distance from center of disk to any vertex of the
@@ -31,6 +32,7 @@ class PoincareViewModel(QWidget):
 		p = self.sideCount
 		q = self.adjacentCount
 		dist = (self.diskDiameter/2) * math.sqrt(math.cos(math.pi/p + math.pi/q)*math.cos(math.pi/q) / (math.sin(2*math.pi/q) * math.sin(math.pi/p) + math.cos(math.pi/p + math.pi/q)* math.cos(math.pi/q)))
+		#dist = (self.diskDiameter/2) * math.sqrt( ((1/math.tan(math.pi/p))*(1/math.tan(math.pi/q)))/2 + 1/2 )
 		alpha = 2*math.pi/p
 
 		centerVertices = []
@@ -46,11 +48,17 @@ class PoincareViewModel(QWidget):
 		x = round(precision * aPoint.x())/precision
 		y = round(precision * aPoint.y())/precision
 
-		if x in self.drawnTiles and y in self.drawnTiles[x]:
-			return True
+		try:
+			return self.drawnTiles[x][y]
+		except:
+			return None
 
-		self.drawnTiles[x].add(y)
-		return False
+	def addDrawnTile(self, aTile):
+		precision = 1000
+		x = round(precision * aTile.center.x())/precision
+		y = round(precision * aTile.center.y())/precision
+
+		self.drawnTiles[x][y] = aTile
 
 	# Breadth-first construction of tiles by reflection about each side, with the 
 	# initial tile centered on the origin. The disk origin and diskDiameter are 
@@ -62,7 +70,7 @@ class PoincareViewModel(QWidget):
 		self.tiles.clear()
 		self.centerVertices.clear()
 
-		centerTile = Tile(self.getCenterVertices(), self.origin, self.renderDepth, self.origin, self.diskDiameter)
+		centerTile = Tile(self.getCenterVertices(), self)
 		#TODO: generate region for center tile
 		queue = [centerTile]
 
@@ -76,15 +84,18 @@ class PoincareViewModel(QWidget):
 
 			for edge in curTile.edges:
 				reflectedCenter = edge.reflectPoint(curTile.center)
-				if self.hasBeenDrawn(reflectedCenter):
-					continue
+				neighbor = self.hasBeenDrawn(reflectedCenter)
+				if neighbor is None:
+					reflectedVertices = edge.reflectTile(curTile)
+					neighbor = Tile(reflectedVertices, self, reflectedCenter, curTile.layer-1)
+					queue.insert(0, neighbor)
+					self.addDrawnTile(neighbor)
 
-				reflectedVertices = edge.reflectTile(curTile)
-
-				neighbor = Tile(reflectedVertices, reflectedCenter, curTile.layer-1, self.origin, self.diskDiameter)
-				curTile.neighbors.append(neighbor)
-				neighbor.neighbors.append(curTile)
-				queue.insert(0, neighbor)
+				if neighbor not in curTile.neighbors:
+					curTile.neighbors.append(neighbor)
+				if curTile not in neighbor.neighbors:
+					neighbor.neighbors.append(curTile)
+			#print(len(curTile.neighbors))
 
 	def getExtendedX(self, d, m):
 		return math.sqrt((d*d) / (1 + 1 * m*m))
@@ -213,3 +224,7 @@ class PoincareViewModel(QWidget):
 	def mousePressEvent(self, e):
 		if self.diskRegion.contains(QPoint(e.x(), e.y())):
 			self.parent.controller.clicked(e)
+
+	def toggleFillMode(self):
+		self.fillMode = not self.fillMode
+		self.update()

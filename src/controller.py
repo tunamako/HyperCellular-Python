@@ -1,91 +1,115 @@
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QWidget, QPushButton, QSpinBox, QHBoxLayout, QVBoxLayout, QLabel
-from PyQt5.QtCore import QPoint
+from PyQt5.QtWidgets import QWidget, QCheckBox, QPushButton, QSpinBox, QHBoxLayout, QVBoxLayout, QLabel
+from PyQt5.QtCore import QPoint, QTimer
 
 from automaton import Life, WireWorld
 import random
+import time
 
 class CellularController(QWidget):
 	def __init__(self, parent):
 		super().__init__(parent)
 		self.model = self.parent().model
 		self.automaton = WireWorld()
-		
-		self.initSideCountInput()
-		self.initAdjCountInput()
-		self.initDepthInput()
+
+		self.timer = QTimer()
+		self.timer.timeout.connect(self.nextGeneration)
+		self.animSpeed = 100
 
 		self.vbox = QVBoxLayout()
-		self.vbox.addLayout(self.sideCountLayout)
-		self.vbox.addLayout(self.adjCountLayout)
-		self.vbox.addLayout(self.depthLayout) 
+		self.initAnimationButtons()
+		self.initSpinBoxes()
+		self.initControlButtons()
 
-		randButton = QPushButton()
-		randButton.clicked.connect(self.randomize)
-		randButton.setText("Randomize")
-		nextButton = QPushButton()
-		nextButton.clicked.connect(self.nextGeneration)
-		nextButton.setText("Next Gen")
-
-		self.vbox.addWidget(randButton)
-		self.vbox.addWidget(nextButton)
 		self.vbox.addStretch(1)
 		self.setLayout(self.vbox)
 
-	def initSideCountInput(self):
-		self.sideCountInput = QSpinBox()
-		self.sideCountInput.setRange(3, 99)
-		self.sideCountInput.setValue(self.model.sideCount)
-		self.sideCountInput.valueChanged.connect(self.setSideCount)
+	def initAnimationButtons(self):
+		buttons = [
+			#Label, connected function
+			["Start", lambda: self.timer.start(self.animSpeed)],
+			["Stop", self.timer.stop],
+			["Step", self.nextGeneration],
+		]
 
-		self.sideCountLayout = QHBoxLayout()
-		self.sideCountLayout.addWidget(QLabel("Side Count"))
-		self.sideCountLayout.addWidget(self.sideCountInput)
+		hbox = QHBoxLayout()
 
-	def initAdjCountInput(self):
-		self.adjCountInput = QSpinBox()
-		self.adjCountInput.setRange(3, 99)
-		self.adjCountInput.setValue(self.model.adjacentCount)
-		self.adjCountInput.valueChanged.connect(self.setAdjCount)
+		for button in buttons:
+			widget = QPushButton(button[0])
+			widget.clicked.connect(button[1])
+			hbox.addWidget(widget)
 
-		self.adjCountLayout = QHBoxLayout()
-		self.adjCountLayout.addWidget(QLabel("Adjacency Count"))
-		self.adjCountLayout.addWidget(self.adjCountInput)
+		self.vbox.addLayout(hbox)
 
-	def initDepthInput(self):
-		self.depthInput = QSpinBox()
-		self.depthInput.setRange(1, 99)
-		self.depthInput.setValue(self.model.renderDepth)
-		self.depthInput.valueChanged.connect(self.setRenderDepth)
+	def initSpinBoxes(self):
+		self.spinboxes = [
+			#Label, min value, max value, init, connected function
+			["Speed (ms)", 1, 100000, self.animSpeed, self.setSpeed], 
+			["Side Count", 3, 99, self.model.sideCount, self.setSideCount], 
+			["Adjacency Count", 3, 99, self.model.adjacentCount, self.setAdjCount],
+			["Render Depth", 1, 99, self.model.renderDepth, self.setRenderDepth],
+		]
 
-		self.depthLayout = QHBoxLayout()
-		self.depthLayout.addWidget(QLabel("Render Depth"))
-		self.depthLayout.addWidget(self.depthInput)
+		for i, box in enumerate(self.spinboxes):
+			widget = QSpinBox()
+			widget.setRange(box[1], box[2])
+			widget.setValue(box[3])
+			widget.valueChanged.connect(box[4])
+
+			layout = QHBoxLayout()
+			layout.addWidget(QLabel(box[0]))
+			layout.addWidget(widget)
+			self.vbox.addLayout(layout)
+			self.spinboxes[i] = widget
+
+	def initControlButtons(self):
+		buttons = [
+			#Label, connected function
+			["Clear", self.resetColors],
+			["Randomize", self.randomize],
+			["Toggle Fill", self.toggleFill],
+		]
+
+		for button in buttons:
+			widget = QPushButton(button[0])
+			widget.clicked.connect(button[1])
+			self.vbox.addWidget(widget)
+
+	def nextGeneration(self):
+		self.automaton.nextGeneration(self.model)
+		self.model.updateTiles()
+
+	def setSpeed(self, speed):
+		self.animSpeed = speed
+		self.timer.setInterval(speed)
 
 	def setSideCount(self, count):
 		current = self.model.sideCount
 
 		#If the input is invalid, set the spinbox value to what it was previously
 		if self.model.setSideCount(count) == -1:
-			self.sideCountInput.setValue(current)
+			self.spinboxes[1].setValue(current)
 
 	def setAdjCount(self, count):
 		current = self.model.adjacentCount
 
 		#If the input is invalid, set the spinbox value to what it was previously
 		if self.model.setAdjCount(count) == -1:
-			self.adjCountInput.setValue(current)
+			self.spinboxes[2].setValue(current)
 
 	def setRenderDepth(self, depth):
 		self.model.setRenderDepth(depth)
+
+	def resetColors(self):
+		self.automaton.fill(self.model.tiles)
+		self.model.updateTiles()
 
 	def randomize(self):
 		self.automaton.randomize(self.model.tiles)
 		self.model.updateTiles()
 
-	def nextGeneration(self):
-		self.automaton.nextGeneration(self.model)
-		self.model.updateTiles()
+	def toggleFill(self):
+		self.model.toggleFillMode()
 
 	def clicked(self, e):
 		location = QPoint(e.x(), e.y())
@@ -94,8 +118,3 @@ class CellularController(QWidget):
 				self.automaton.clicked(tile)
 				self.model.updateTiles()
 				break
-
-	def resetColors(self):
-		self.automaton.fill(self.model.tiles)
-		self.model.updateTiles()
-

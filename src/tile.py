@@ -7,37 +7,42 @@ import random
 
 
 class Tile:
-	def __init__(self, vertices, center, layer, origin, diskDiameter):
+	def __init__(self, vertices, model, center=None, layer=None):
 
 		self.edges = []
 		self.neighbors = []
-		self.center = center
-		self.layer = layer
+		self.center = center if center else model.origin
+		self.layer = layer if layer else model.renderDepth
 		self.vertices = vertices
 		self.color = QColor(255, 255, 255, 255)
 		self.nextColor = None
+		self.fillMode = model.fillMode
 
+		origin = model.origin
+		diskDiameter = model.diskDiameter
 		self.region = QRegion(QRect(origin.x() - diskDiameter/2, origin.y() - diskDiameter/2, diskDiameter, diskDiameter), QRegion.Ellipse)
 
 		for A, B in zip(vertices[-1:] + vertices[:-1], vertices):
 			if areCollinear(A, B, origin):
 				edge = LineEdge(A, B)
-				region = edge.getRegion(center, origin, diskDiameter)
 			else:
 				edge = ArcEdge(A, B, origin, diskDiameter)
-				region = edge.getRegion()
-
 			self.edges.append(edge)
-			
-			if region.contains(QPoint(center.x(), center.y())):
-				self.region = self.region.intersected(region)
-			else:
-				self.region = self.region.subtracted(region)
+
+		if self.fillMode:
+			for edge in self.edges:
+				region = edge.getRegion(self.center, origin, diskDiameter)
+
+				if model.fillMode and region.contains(QPoint(self.center.x(), self.center.y())):
+					self.region = self.region.intersected(region)
+				else:
+					self.region = self.region.subtracted(region)
 			
 	def draw(self, painter):
-		path = QPainterPath()
-		path.addRegion(self.region)
-		painter.fillPath(path, QBrush(self.color))
+		if self.fillMode:
+			path = QPainterPath()
+			path.addRegion(self.region)
+			painter.fillPath(path, QBrush(self.color))
 
 		for edge in self.edges:
 			edge.draw(painter)
