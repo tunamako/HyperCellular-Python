@@ -17,10 +17,10 @@ class Tile:
 		self.color = QColor(0, 0, 0, 255)
 		self.nextColor = None
 		self.fillMode = model.fillMode
+		self.region = model.diskRegion
 
 		origin = model.origin
 		diskDiameter = model.diskDiameter
-		self.region = QRegion(QRect(origin.x() - diskDiameter/2, origin.y() - diskDiameter/2, diskDiameter, diskDiameter), QRegion.Ellipse)
 
 		for A, B in zip(vertices[-1:] + vertices[:-1], vertices):
 			if areCollinear(A, B, origin):
