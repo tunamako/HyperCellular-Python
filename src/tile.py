@@ -14,7 +14,7 @@ class Tile:
 		self.center = center if center else model.origin
 		self.layer = layer if layer else model.renderDepth
 		self.vertices = vertices
-		self.color = QColor(255, 255, 255, 255)
+		self.color = QColor(0, 0, 0, 255)
 		self.nextColor = None
 		self.fillMode = model.fillMode
 

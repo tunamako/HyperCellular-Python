@@ -43,6 +43,8 @@ class PoincareViewModel(QWidget):
 			centerVertices.append(QPointF(x, y))
 		return centerVertices
 		
+	#Since tiles are indexed by their centers (floating point), we need some leeway
+	#with how 'close' two points need to be to be considered the same
 	def hasBeenDrawn(self, aPoint):
 		precision = 1000
 		x = round(precision * aPoint.x())/precision
@@ -61,8 +63,8 @@ class PoincareViewModel(QWidget):
 		self.drawnTiles[x][y] = aTile
 
 	# Breadth-first construction of tiles by reflection about each side, with the 
-	# initial tile centered on the origin. The disk origin and diskDiameter are 
-	# passed to each tile since they are needed to calculate the arcs that 
+	# initial tile centered on the origin. This viewmodel is passed to each tile
+	# since the disk's origin and diskDiameter are needed to calculate the arcs that 
 	# make up the sides of a tile.
 	def drawTiling(self):
 		self.drawnCount = 0
@@ -71,7 +73,8 @@ class PoincareViewModel(QWidget):
 		self.centerVertices.clear()
 
 		centerTile = Tile(self.getCenterVertices(), self)
-		#TODO: generate region for center tile
+		self.addDrawnTile(centerTile)
+
 		queue = [centerTile]
 
 		while queue:
@@ -83,19 +86,23 @@ class PoincareViewModel(QWidget):
 				continue
 
 			for edge in curTile.edges:
+				#First reflect the center of the current tile to check if the reflected
+				#tile has been drawn before
 				reflectedCenter = edge.reflectPoint(curTile.center)
 				neighbor = self.hasBeenDrawn(reflectedCenter)
+
 				if neighbor is None:
+					#draw and log the new tile
 					reflectedVertices = edge.reflectTile(curTile)
 					neighbor = Tile(reflectedVertices, self, reflectedCenter, curTile.layer-1)
 					queue.insert(0, neighbor)
 					self.addDrawnTile(neighbor)
 
+				#construct the list of neighbors
 				if neighbor not in curTile.neighbors:
 					curTile.neighbors.append(neighbor)
 				if curTile not in neighbor.neighbors:
 					neighbor.neighbors.append(curTile)
-			#print(len(curTile.neighbors))
 
 	def updateTiles(self):
 		self.tilesToUpdate = True

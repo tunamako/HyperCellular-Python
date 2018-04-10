@@ -46,8 +46,8 @@ class WireWorld(Automaton):
 class Life(Automaton):
 	def __init__(self):
 		self.states = [
-			QColor(255, 255, 255, 255), #off
 			QColor(0, 0, 0, 255),		#on
+			QColor(255, 255, 255, 255), #off
 		]
 
 	def nextGeneration(self, aModel):

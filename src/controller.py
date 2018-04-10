@@ -11,7 +11,9 @@ class CellularController(QWidget):
 		super().__init__(parent)
 		self.model = self.parent().model
 		self.automaton = WireWorld()
-
+		self.toggleFill()
+		
+		#self.resetTiles()
 		self.timer = QTimer()
 		self.timer.timeout.connect(self.nextGeneration)
 		self.animSpeed = 100
@@ -65,7 +67,7 @@ class CellularController(QWidget):
 	def initControlButtons(self):
 		buttons = [
 			#Label, connected function
-			["Clear", self.resetColors],
+			["Clear", self.resetTiles],
 			["Randomize", self.randomize],
 			["Toggle Fill", self.toggleFill],
 		]
@@ -100,7 +102,7 @@ class CellularController(QWidget):
 	def setRenderDepth(self, depth):
 		self.model.setRenderDepth(depth)
 
-	def resetColors(self):
+	def resetTiles(self):
 		self.automaton.fill(self.model.tiles)
 		self.model.updateTiles()
 
