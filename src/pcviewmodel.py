@@ -19,9 +19,9 @@ class PoincareViewModel(QWidget):
 		self.drawnTiles = defaultdict(defaultdict)
 		self.tiles = []
 		self.tilesToUpdate = False
-		self.sideCount = 5
-		self.adjacentCount = 4
-		self.renderDepth = 4
+		self.sideCount = 7
+		self.adjacentCount = 3
+		self.renderDepth = 2
 		self.fillMode = True
 
 
@@ -76,12 +76,10 @@ class PoincareViewModel(QWidget):
 		self.addDrawnTile(centerTile)
 
 		queue = [centerTile]
-
 		while queue:
 			curTile = queue.pop()
 			curTile.draw(self.painter)
 			self.tiles.append(curTile)
-
 			if curTile.layer == 1:
 				continue
 

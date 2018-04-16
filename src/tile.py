@@ -31,7 +31,7 @@ class Tile:
 
 		if self.fillMode:
 			for edge in self.edges:
-				region = edge.getRegion(self.center, origin, diskDiameter)
+				region = edge.getRegion(self.center, origin, diskDiameter/2)
 
 				if model.fillMode and region.contains(QPoint(self.center.x(), self.center.y())):
 					self.region = self.region.intersected(region)
