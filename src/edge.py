@@ -55,38 +55,29 @@ class LineEdge(Edge):
 
 	def getRegion(self, polygonCenter, origin, radius):
 		#create a triangle that contains the entire tile using three points:
-		self.origin = origin
-		#point on edge of disk where this lineedge would intersect if extended
-		#get intersections of this lineedge with circle and pick the one closer to the polygon center
+		#	origin of the disk
+		#	point on edge of disk where this lineedge would intersect if extended
+		#	point on edge of disk where the line orthogonal to this edge would intersect
 		
 		theta = math.atan2(self.A.y() - origin.y(), self.A.x() - origin.x())
 
 		diskPointX = origin.x() + math.cos(theta) * radius
 		diskPointY = origin.y() + math.sin(theta) * radius
 
-		self.diskPoint = QPoint(diskPointX, diskPointY)
+		diskPoint = QPoint(diskPointX, diskPointY)
 
-		gamma = theta + math.pi/3
-		orthoDiskPointX = origin.x() + math.cos(gamma) * radius
-		orthoDiskPointY = origin.y() + math.sin(gamma) * radius
-
-		orthoDiskPointA = QPoint(orthoDiskPointX, orthoDiskPointY)
-
-		gamma = theta - math.pi/3
-		orthoDiskPointX = origin.x() + math.cos(gamma) * radius
-		orthoDiskPointY = origin.y() + math.sin(gamma) * radius
-
-		orthoDiskPointB = QPoint(orthoDiskPointX, orthoDiskPointY)
-
-		distA = distance(orthoDiskPointA, polygonCenter)
-		distB = distance(orthoDiskPointB, polygonCenter)
-
-		if distA < distB:
-			self.orthoDiskPoint = orthoDiskPointA
+		#determine which side of the edge the polygon is on
+		if math.atan2(polygonCenter.y() - origin.y(), polygonCenter.x() - origin.x()) < theta:
+			gamma = theta - math.pi/3
 		else:
-			self.orthoDiskPoint = orthoDiskPointB
+			gamma = theta + math.pi/3
 
-		self.trianglePoly = QPolygon([origin.toPoint(), self.diskPoint, self.orthoDiskPoint])
+		orthoDiskPointX = origin.x() + math.cos(gamma) * radius
+		orthoDiskPointY = origin.y() + math.sin(gamma) * radius
+
+		orthoDiskPoint = QPoint(orthoDiskPointX, orthoDiskPointY)
+
+		self.trianglePoly = QPolygon([origin.toPoint(), diskPoint, orthoDiskPoint])
 		return QRegion(self.trianglePoly)
 
 class ArcEdge(Edge):
