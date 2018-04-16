@@ -11,7 +11,6 @@ class CellularController(QWidget):
 		super().__init__(parent)
 		self.model = self.parent().model
 		self.automaton = WireWorld()
-		self.toggleFill()
 		
 		#self.resetTiles()
 		self.timer = QTimer()
