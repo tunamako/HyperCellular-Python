@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QColor, QRegion, QPainterPath, QBrush
+from PyQt5.QtGui import QColor, QRegion, QPainterPath, QBrush, QPolygon
 from PyQt5.QtCore import QRect, QPoint
 
 from math_helpers import areCollinear
@@ -7,27 +7,27 @@ import random
 
 
 class Tile:
-	def __init__(self, vertices, model, center=None, layer=None):
+	def __init__(self, vertices, model, layer, center=None):
 
 		self.edges = []
 		self.neighbors = []
 		self.center = center if center else model.origin
-		self.layer = layer if layer else model.renderDepth
+		self.layer = layer
 		self.vertices = vertices
-		self.color = QColor(0, 0, 0, 255)
+		self.color = QColor(0,0, 0, 255)
 		self.nextColor = None
 		self.fillMode = model.fillMode
 		self.region = model.diskRegion
 
 		origin = model.origin
 		diskDiameter = model.diskDiameter
-
 		for A, B in zip(vertices[-1:] + vertices[:-1], vertices):
 			if areCollinear(A, B, origin):
 				edge = LineEdge(A, B)
+				self.edges.append(edge)
 			else:
 				edge = ArcEdge(A, B, origin, diskDiameter)
-			self.edges.append(edge)
+				self.edges.insert(0, edge)
 
 		if self.fillMode:
 			for edge in self.edges:

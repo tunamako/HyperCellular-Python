@@ -21,8 +21,8 @@ class PoincareViewModel(QWidget):
 		self.tilesToUpdate = False
 		self.sideCount = 5
 		self.adjacentCount = 4
-		self.renderDepth = 5
-		self.fillMode = False
+		self.renderDepth = 4
+		self.fillMode = True
 
 
 	#Formula to calculate distance from center of disk to any vertex of the
@@ -72,7 +72,7 @@ class PoincareViewModel(QWidget):
 		self.tiles.clear()
 		self.centerVertices.clear()
 
-		centerTile = Tile(self.getCenterVertices(), self)
+		centerTile = Tile(self.getCenterVertices(), self, self.renderDepth)
 		self.addDrawnTile(centerTile)
 
 		queue = [centerTile]
@@ -94,7 +94,7 @@ class PoincareViewModel(QWidget):
 				if neighbor is None:
 					#draw and log the new tile
 					reflectedVertices = edge.reflectTile(curTile)
-					neighbor = Tile(reflectedVertices, self, reflectedCenter, curTile.layer-1)
+					neighbor = Tile(reflectedVertices, self, curTile.layer-1, reflectedCenter)
 					queue.insert(0, neighbor)
 					self.addDrawnTile(neighbor)
 

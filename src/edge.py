@@ -1,7 +1,7 @@
-from PyQt5.QtGui import QRegion
-from PyQt5.QtCore import QRect, QRectF, QPointF, QLineF
+from PyQt5.QtGui import QRegion, QPolygon, QPen, QColor
+from PyQt5.QtCore import QRect, QRectF, QPoint, QPointF, QLineF
 
-from math_helpers import distance, slope
+from math_helpers import distance, slope, midpoint
 import math
 
 class Edge:
@@ -52,9 +52,85 @@ class LineEdge(Edge):
 		
 	def draw(self, painter):
 		painter.drawLine(self.A, self.B)
+		#painter.drawPolygon(self.trianglePoly)
 
-	def getRegion(self, polygonCenter, origin, diskDiameter):
-		pass
+	def getExtendedX(self, d, m):
+		#returns the x-distance needed to extend a point d-distance along this line
+		return math.sqrt((d*d) / (1 + 1 * m**2))
+
+	def getRegion(self, polygonCenter, origin, radius):
+		#create a triangle that contains the entire tile using three points:
+		
+		#point on edge of disk where this lineedge would intersect if extended
+		#get intersections of this lineedge with circle and pick the one closer to the polygon center
+		m = self.slope
+		b = self.y_intercept
+		
+		if m == None:
+			#line is vertical
+			if polygonCenter.y() > origin.y():
+				diskPoint = QPoint(origin.x(), origin.y() + radius)
+			else:
+				diskPoint = QPoint(origin.x(), origin.y() - radius)
+		elif -0.001 <= m <= 0.001:
+			#line is horizontal
+			if polygonCenter.x() > origin.x():
+				diskPoint = QPoint(origin.x() + radius, origin.y())
+			else:
+				diskPoint = QPoint(origin.x() - radius, origin.y())
+		else:
+			deltaX = self.getExtendedX(radius, self.slope)
+
+			diskPointX_A = origin.x() + deltaX
+			diskPointY_A = m * diskPointX_A + b
+			diskPointX_B = origin.x() - deltaX
+			diskPointY_B = m * diskPointX_B + b
+
+			candidateA = QPoint(diskPointX_A, diskPointY_A)
+			candidateB = QPoint(diskPointX_B, diskPointY_B)
+
+			if distance(polygonCenter, candidateA) < distance(polygonCenter, candidateB):
+				diskPoint = candidateA
+			else:
+				diskPoint = candidateB
+
+		#point on edge of disk where the line orthogonal to this lineedge would intersect
+		orthoDiskPoint = QPoint()
+		edgeMidpoint = midpoint(self.A, self.B)
+
+		if m == None:
+			#line is vertical
+			if polygonCenter.x() < edgeMidpoint.x():
+				orthoDiskPoint = QPoint(edgeMidpoint.x() + radius, edgeMidpoint.y())
+			else:
+				orthoDiskPoint = QPoint(edgeMidpoint.x() - radius, edgeMidpoint.y())
+		elif -0.001 <= m <= 0.001:
+			#line is horizontal
+			if polygonCenter.y() < edgeMidpoint.y():
+				orthoDiskPoint = QPoint(edgeMidpoint.x(), edgeMidpoint.y() + radius)
+			else:
+				orthoDiskPoint = QPoint(edgeMidpoint.x(), edgeMidpoint.y() - radius)
+		else:
+			deltaX = self.getExtendedX(radius, -1/self.slope)
+
+			orthoDiskPointX_A = origin.x() + deltaX
+			orthoDiskPointY_A = m * orthoDiskPointX_A + b
+			orthoDiskPointX_B = origin.x() - deltaX
+			orthoDiskPointY_B = m * orthoDiskPointX_B + b
+
+			candidateA = QPoint(orthoDiskPointX_A, orthoDiskPointY_A)
+			candidateB = QPoint(orthoDiskPointX_B, orthoDiskPointY_B)
+
+			if distance(polygonCenter, candidateA) >distance(polygonCenter, candidateB):
+				orthoDiskPoint = candidateA
+			else:
+				orthoDiskPoint = candidateB			
+
+
+		self.tripoints = [QPoint(origin.x(), origin.y()), diskPoint, orthoDiskPoint]
+		self.trianglePoly = QPolygon([QPoint(origin.x(), origin.y()), diskPoint, orthoDiskPoint])
+
+		return QRegion(self.trianglePoly)
 
 class ArcEdge(Edge):
 	def __init__(self, A, B, origin, diskDiameter):
@@ -112,6 +188,6 @@ class ArcEdge(Edge):
 		
 		painter.drawArc(rect, 16 * lineA.angle(), 16 * sweepAngle)
 
-	def getRegion(self, polygonCenter, origin, diskDiameter):
+	def getRegion(self, polygonCenter, origin, radius):
 		rect = QRect(self.center.x() - self.radius, self.center.y() - self.radius, self.radius * 2, self.radius * 2)
 		return QRegion(rect, QRegion.Ellipse)

@@ -1,4 +1,5 @@
 import math
+from PyQt5.QtCore import QPointF
 
 def distance(A, B):
 	return math.sqrt(math.pow((B.x() - A.x()), 2) + math.pow((B.y() - A.y()), 2))
