@@ -1,3 +1,13 @@
-doc
+doc/paper/*
+!doc/paper/SeniorProjectPaper.tex
+!doc/paper/SeniorProjectPaper.pdf
 
+doc/paper/bibliography/*
+!doc/paper/bibliography/bibliography.tex
+!doc/paper/bibliography/bibliography.pdf
+!doc/paper/bibliography/references.bib
+
+doc/proposal/*
+!doc/proposal/proposal.tex
+!doc/proposal/proposal.pdf
 src/__pycache__

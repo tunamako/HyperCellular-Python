@@ -1,0 +1,55 @@
+\documentclass[letterpaper,12pt]{article}
+\begin{document}
+
+\title{CS 480 - Project Proposal}
+\author{Michael Whalen}
+\date{January 27, 2018}
+\maketitle
+
+For this project I am building an interactive desktop application to represent celluar automata in hyperbolic 2-space. Essentially, rather than having a grid of square cells like most automata, I'll be tiling a Poincar\'e disk with a polygon of arbitrarily many sides. Ideally, a user would be able to select the type of polygon to be tiled as well as selecting from a list of pre-made rulesets for the automata to follow. Further, I'd like custom rulesets to be possible and to have the cells be capable of more than two states. The user should be able to manipulate the animation of the automata through simple procedures like start/stop/step/change speed.
+
+The application will be written in C++ and will use Qt for the graphical interface and drawing the cells. I'll need to research the mathematical procedures for constructing tilings on the hyperbolic plane in addition to the display capabilities of Qt to be able to most efficiently draw tiles with a high resolution towards the edge of the disk. My goal is come away from this project with a much deeper of understanding of hyperbolic geometry and graphical interfaces.
+
+Some of the below features like zoom and rotating the viewport might be exceptionally difficult and are stretch goals, so I consider 100 points to be sufficient since it covers essential functionality and extended user interaction. 
+
+\begin{center}
+  \begin{tabular}{ | l | r | }
+    \hline
+    \textbf{Feature} & \textbf{Point Value} \\ \hline
+    Hyperbolic tilings of a single polygon & 20 \\ \hline
+    Support arbitrarily many polygon types & 20 \\ \hline
+    Color in the tilings according to an automaton & 20 \\ \hline
+    Animate changes in state & 10 \\ \hline
+    Supports multiple sets of rules & 5 \\ \hline
+	Supports an arbitrary amount of rulesets & 10 \\ \hline
+	Supports more than two states & 5 \\ \hline
+	Users can interactively change the state of cell by clicking & 10 \\ \hline
+	User selects cell dimensions & 5 \\ \hline
+	User inputs rulesets & 5 \\ \hline
+	User inputs possible states & 3 \\ \hline
+	User selects color of states & 3 \\ \hline
+	User selects speed of animation & 1 \\ \hline
+	Start/stop animation & 1 \\ \hline
+	Step one generation at a time & 1 \\ \hline
+	Can save/load states and rules & 5 \\ \hline
+	Can zoom in & 5 \\ \hline
+	Zoom without losing resolution & 10 \\ \hline
+	Can rotate view & 10 \\ \hline
+	\textbf{Total:} & \textbf{149} \\ \hline
+
+  \end{tabular}
+\end{center}
+
+\begin{center}
+  \begin{tabular}{ | l | r | }
+    \hline
+    \textbf{Point Range} & \textbf{Grade} \\ \hline
+    100+ & A \\ \hline
+    85 - 99 & B \\ \hline
+    70 - 84 & C \\ \hline
+    50 - 69 & D \\ \hline
+    Below 50 & F \\ \hline
+
+  \end{tabular}
+\end{center}
+\end{document}
