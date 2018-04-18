@@ -1,0 +1,43 @@
+Why did I choose the project?
+
+Hyperbolic Geometry
+	- define lines
+	- define polygons
+	- briefly mention differnent models and why I chose the poincare model
+
+Regular Tilings
+	- describe them in euclidean geometry
+	- describe in hyperbolic
+		- schlaffi notation
+		- valid vs invalid schlaffi numbers
+
+Algorithms for construction
+	- describe hyperbolic reflection
+	- different possibilities for construction
+		- compass and straightedge
+		- reflection (the one i chose)
+		- reflection + rotation
+	- coordinatization difficulties (briefly, save group theory for the end)
+
+Implementation
+	- class diagram
+	- interaction of controller/viewmodel
+	- extensibility and support for other models (klein)
+	- describe pcviewmodel, tile, edge and their responsibilities
+	- image of ui + description of interactivity
+
+Cellular Automata
+	- Basic description and concepts
+		- briefly mention them in square grids
+		- neighborhoods
+	- Class diagram and interaction with the rest of the program
+	- extensibility and inheritance to support any CA
+
+Conclusion
+	- issues
+		- coordinitization
+		- much more difficult than i anticipated overall
+			- half the semester was spent on constructing the tiling
+	- hopes
+		- use group theory + knuth-bendix completion
+		- use opengl for more optimized rendering

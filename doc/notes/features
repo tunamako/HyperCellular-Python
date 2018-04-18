@@ -1,0 +1,30 @@
+##Functionality
+20 - Display hyperbolic tilings of a single polygon
+20 - Support arbitrarily  many polygon types
+20 - Color in the tilings according to a cellular automaton
+10 - Animate changes in state
+5 - Supports multiple sets of rules
+10 - Supports an arbitrary amount of rulesets
+5 - Supports more than two states
+
+
+##Interaction
+5 - Users can interactively change the state of cell by clicking
+5 - User selects cell dimensions
+5 - User inputs rulesets
+3 - User inputs possible states
+3 - User selects color of states
+1 - User selects speed of animation
+1 - Start/stop animation
+1 - Step one generation at a time
+10 - Can save/load states and rules
+5 - Can zoom in
+	+10 Without losing resolution
+15 - Can rotate view
+
+
+111 total
+70 is an A
+60 is a B
+50 is a C
+40 is a D

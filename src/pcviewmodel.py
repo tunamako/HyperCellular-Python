@@ -19,9 +19,9 @@ class PoincareViewModel(QWidget):
 		self.drawnTiles = defaultdict(defaultdict)
 		self.tiles = []
 		self.tilesToUpdate = False
-		self.sideCount = 7
-		self.adjacentCount = 3
-		self.renderDepth = 2
+		self.sideCount = 5
+		self.adjacentCount = 4
+		self.renderDepth = 4
 		self.fillMode = True
 
 
@@ -31,8 +31,7 @@ class PoincareViewModel(QWidget):
 	def getCenterVertices(self):
 		p = self.sideCount
 		q = self.adjacentCount
-		dist = (self.diskDiameter/2) * math.sqrt(math.cos(math.pi/p + math.pi/q)*math.cos(math.pi/q) / (math.sin(2*math.pi/q) * math.sin(math.pi/p) + math.cos(math.pi/p + math.pi/q)* math.cos(math.pi/q)))
-		#dist = (self.diskDiameter/2) * math.sqrt( ((1/math.tan(math.pi/p))*(1/math.tan(math.pi/q)))/2 + 1/2 )
+		dist = (self.diskDiameter/2) * math.sqrt(math.cos(math.pi * (1/p + 1/q)) / math.cos(math.pi * (1/p - 1/q)))
 		alpha = 2*math.pi/p
 
 		centerVertices = []
@@ -101,10 +100,6 @@ class PoincareViewModel(QWidget):
 					curTile.neighbors.append(neighbor)
 				if curTile not in neighbor.neighbors:
 					neighbor.neighbors.append(curTile)
-
-	def updateTiles(self):
-		self.tilesToUpdate = True
-		self.update()
 
 	def paintEvent(self, anEvent):
 		self.painter = QPainter(self)
