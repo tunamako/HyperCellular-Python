@@ -36,13 +36,17 @@ Using the above formula, when $\theta=1/2$ the tiling is Euclidean. When $\theta
 So we know what a tiling is, but how do we make one? It's actually a question with a suprisingly simple solution, yet it took me a couple of months to realize it through extensive reading. We can construct hyperbolic tilings in exactly the same way that we might in Euclidean space: start with a polygon, reflect it about each of its sides, and repeat for these new polygons. The only real difference with hyperbolic space is the method of reflection. Because the sides of the polygon are sections of circles, reflecting a point about a side is the same as performing a Euclidean inversion about the corresponding circle.
 
 \begin{wrapfigure}{r}{0.25\textwidth}
-\includegraphics[width=0.25\textwidth]{../tilingDistance.png}
+\includegraphics[width=0.25\textwidth]{../media/tilingDistance.png}
 \end{wrapfigure}
 
 The center polygon can by found by determining one value: the distance between the origin of the disk and one of its vertices. This distance $d$ is then used to find the first vertex of the polygon, which can be anywhere on the circle concentric with the disk and of radius $d$.  The remaining vertices can then be found by rotating this first vertex about the origin at $\frac{\pi}{p}$ intervals. The inital distance $d$ is calculated from the $p$ and $q$ values which specify the tiling:
 \begin{gather*}
 d = r\sqrt{\frac{cos(\frac{\pi}{p} + \frac{\pi}{q})}{cos(\frac{\pi}{p} - \frac{\pi}{q})}}
 \end{gather*}
+
+Then, the arcs between these vertices are constructed by first generating the Euclidean circles that constitute them. For example, for two vertices $A$ and $B$, generate a third point $C$ outside of the disk by inverting either A or B about the disk. The perpendicular bisectors $l$ and $m$ for the segments $AB$ and $BC$ respectively will intersect at a point $D$, which will be the center for the desired circle. Then it's trivial to construct the arc between A and B.
+
+To create a tile adjacent to the center polygon, reflect all the vertices of the polygon about the common side by performing a Euclidean inversion of each vertex about the circle that makes up that side. This makes the vertices for the adjacent polygon and the process for generating its sides is a repetition of the process for the center polygon.
 
 \section*{Cellular Automata}
 
@@ -71,19 +75,19 @@ I learned a ton through this experience and it really felt like I was able to co
 
 \section*{Figures}
 \begin{figure}[H]
-\hspace{-10em}\includegraphics[width=\paperwidth]{../class_diagram.png}
+\hspace{-10em}\includegraphics[width=\paperwidth]{../media/class_diagram.png}
 \caption{Diagram of the classes created in the project.}
 \centering
 \end{figure}
 
 \begin{figure}[H]
-\vspace{-5em}\includegraphics[width=29em]{../ui1.png}
+\vspace{-5em}\includegraphics[width=29em]{../media/ui1.png}
 \caption{The UI displaying a \{5,4\} tiling and no fill.}
 \centering
 \end{figure}
 
 \begin{figure}[H]
-\includegraphics[width=29em]{../ui2.png}
+\includegraphics[width=29em]{../media/ui2.png}
 \caption{The UI displaying a \{7,3\} tiling and wireworld fill.}
 \centering
 \end{figure}
