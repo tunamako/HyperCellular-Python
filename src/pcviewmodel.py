@@ -132,6 +132,10 @@ class PoincareViewModel(QWidget):
 		
 		self.painter.end()
 
+	def updateTiles(self):
+		self.tilesToUpdate = True
+		self.update()
+
 	def areHyperbolicDims(self, p, q):
 		 return (p-2)*(q-2) > 4
 

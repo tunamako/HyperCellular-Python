@@ -13,8 +13,8 @@ class Edge:
 		return [self.reflectPoint(p) for p in aTile.vertices]
 	def draw(self, painter):
 		pass
- 	def getRegion(self, polygonCenter, origin, radius):
- 		pass
+	def getRegion(self, polygonCenter, origin, radius):
+		pass
 class LineEdge(Edge):
 	def __init__(self, A, B):
 		super().__init__()
