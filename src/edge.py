@@ -15,6 +15,7 @@ class Edge:
 		pass
 	def getRegion(self, polygonCenter, origin, radius):
 		pass
+		
 class LineEdge(Edge):
 	def __init__(self, A, B):
 		super().__init__()
