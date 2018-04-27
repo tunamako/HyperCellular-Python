@@ -2,7 +2,9 @@
 \newcommand{\forceindent}{\leavevmode{\parindent=1.25em\indent}}
 
 \usepackage{indentfirst, setspace, amssymb,amsmath,pdfpages,graphicx,float,soul,wrapfig}
+
 \begin{document}
+
 \doublespacing
 \title{Cellular Automata on Regular Tilings of Hyperbolic 2-space}
 \author{Michael Whalen}
@@ -39,7 +41,7 @@ So we know what a tiling is, but how do we make one? It's actually a question wi
 \includegraphics[width=0.25\textwidth]{../media/tilingDistance.png}
 \end{wrapfigure}
 
-The center polygon can by found by determining one value: the distance between the origin of the disk and one of its vertices. This distance $d$ is then used to find the first vertex of the polygon, which can be anywhere on the circle concentric with the disk and of radius $d$.  The remaining vertices can then be found by rotating this first vertex about the origin at $\frac{\pi}{p}$ intervals. The inital distance $d$ is calculated from the $p$ and $q$ values which specify the tiling:
+The center polygon can by found by determining one value: the distance between the origin of the disk and one of its vertices. This distance $d$ is then used to find the first vertex of the polygon, which can be anywhere on the circle concentric with the disk and of radius $d$.  The remaining vertices can then be found by rotating this first vertex about the origin at $\frac{\pi}{p}$ intervals. The inital distance $d$ is calculated from the $p$ and $q$ values which specify the tiling \cite[p.295]{margenstern}:
 \begin{gather*}
 d = r\sqrt{\frac{cos(\frac{\pi}{p} + \frac{\pi}{q})}{cos(\frac{\pi}{p} - \frac{\pi}{q})}}
 \end{gather*}
@@ -134,4 +136,7 @@ I learned a ton through this experience and it really felt like I was able to co
     Below 50 & F \\ \hline
 
  \end{tabular}
+\bibliography{bibliography/references}
+\bibliographystyle{ieeetr}
+
 \end{document}
