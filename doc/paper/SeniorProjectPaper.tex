@@ -29,9 +29,9 @@ Like Euclidean geometry, in hyperbolic geometry we can examine polygons. Moreove
 
 Since there are so many tilings, I needed a simple and programmatic way of referring to individual tilings. This was done using a \textbf{Schl{\"a}fli Symbol}, notated as $\{p, q\}$, where $p$ denotes the number of sides on the polygon and $q$ denotes the number of polygons adjacent to any given vertex. For example, in Euclidean space we can represent the square tiling as \{4, 4\} since squares (four sides) meet four at each vertex. The other two possible tilings of Euclidean space are $\{3, 6\}$ (equilateral triangles) and $\{6, 3\}$ (hexagons). This symbol also provides a simple way for checking if a tiling is valid in hyperbolic space:
 \begin{gather*}
-\theta=1/p + 1/q
+\theta=\frac{1}{p} + \frac{1}{q}
 \end{gather*}
-When $\theta<1/2$ the tiling is elliptic; when $\theta=1/2$ it's Euclidean; when $\theta>1/2$ it's hyperbolic.  These symbols lend themselves to a highly simplified software implementation of tilings.
+When $\theta<\frac{1}{2}$ the tiling is elliptic; when $\theta=\frac{1}{2}$ it's Euclidean; when $\theta>\frac{1}{2}$ it's hyperbolic.  These symbols lend themselves to a highly simplified software implementation of tilings.
 
 \section*{Constructing Tilings}
 
